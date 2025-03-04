@@ -5,7 +5,7 @@ from datetime import datetime
 import jdatetime
 
 # تنظیمات ربات
-bot_token = "‏1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
+bot_token = "1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
 bot = Client(bot_token)
 
 # تابع دریافت تاریخ و زمان
@@ -46,8 +46,8 @@ def track_parcel(tracking_code):
         sender = results["sender"]
         receiver = results["receiver"]
         status_info = results["status_info"]
-        parcel_info = f"فرستنده: {sender['name']} از {sender['city']}\nگیرنده: {receiver['name']} در {receiver['city']}\n"
-        parcel_info += f"تاریخ ثبت سفارش: {status_info[0]['date']} - وضعیت: {status_info[0]['status']}"
+        parcel_info = f"📤فرستنده: {sender['name']} از {sender['city']}\nگیرنده: {receiver['name']} در {receiver['city']}\n"
+        parcel_info += f"📥تاریخ ثبت سفارش: {status_info[0]['date']} - وضعیت: {status_info[0]['status']}"
         return parcel_info
     return "اطلاعات مرسوله پیدا نشد."
 
@@ -60,11 +60,10 @@ def translate_to_farsi(text):
 
 # دکمه‌های اینلاین برای منوی اصلی
 inline_buttons = InlineKeyboard(
-    [("اعلام زمان ⏰", "time")],
-    [("حدیث گو 📖", "hadith")],
-    [("چت با هوش مصنوعی 🤖", "ai_chat")],
-    [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
-    [("ترجمه به فارسی 📝", "translate")]
+    [("اعلام زمان ⏰", "time"), ("حدیث گو 📖", "hadith")],
+    [("چت با هوش مصنوعی 🤖", "ai_chat"), ("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
+    [("ترجمه به فارسی 📝", "translate"), ("راهنما ❓", "help")],
+    [("اطلاعات سازنده 🧑‍💻", "info")]
 )
 
 # دکمه برگشت به منو اصلی
@@ -86,16 +85,16 @@ async def on_callback(callback_query):
         time_info = get_time()
         await callback_query.answer(
             f"زمان به وقت ایران:\n\n"
-            f"تاریخ شمسی: {time_info['shamsi_date']}\n"
-            f"تاریخ میلادی: {time_info['gregorian_date']}\n"
-            f"زمان: {time_info['time']}\n"
-            f"روز: {time_info['day']}\n"
-            f"ماه: {time_info['month']}\n"
-            f"سال: {time_info['year']}"
+            f"تاریخ شمسی: {time_info['shamsi_date']} 🌸\n"
+            f"تاریخ میلادی: {time_info['gregorian_date']} 🌍\n"
+            f"زمان: {time_info['time']} ⏰\n"
+            f"روز: {time_info['day']} 🗓\n"
+            f"ماه: {time_info['month']} 🌙\n"
+            f"سال: {time_info['year']} 🎉"
         )
     elif callback_query.data == "hadith":
         hadith = get_hadith()
-        await callback_query.answer(f"حدیث امروز: {hadith}")
+        await callback_query.answer(f"حدیث امروز: {hadith} 📖\n🗣️ {speaker}")
     elif callback_query.data == "ai_chat":
         await callback_query.answer("برای شروع چت با هوش مصنوعی پیامی ارسال کنید.")
         @bot.on_message()
@@ -114,6 +113,21 @@ async def on_callback(callback_query):
         async def on_message_translation(message):
             translation = translate_to_farsi(message.text)
             await message.reply(translation, reply_markup=reply_keyboard)
+    elif callback_query.data == "help":
+        await callback_query.answer(
+            "راهنمای ربات صراط:\n"
+            "1. اعلام زمان ⏰: نمایش زمان و تاریخ به شمسی و میلادی\n"
+            "2. حدیث گو 📖: دریافت حدیث روز\n"
+            "3. چت با هوش مصنوعی 🤖: چت با هوش مصنوعی اسلامی\n"
+            "4. پیگیری مرسوله تیپاکس 📦: پیگیری وضعیت مرسوله\n"
+            "5. ترجمه به فارسی 📝: ترجمه متنی به فارسی\n"
+            "6. اطلاعات سازنده 🧑‍💻: اطلاعات سازنده ربات"
+        )
+    elif callback_query.data == "info":
+        await callback_query.answer(
+           ‎“.این ربات توسط تیم شفق طراحی و توسعه داده شده است\n”
+        "برای اطلاعات بیشتر و گذارش باگ ها و خطاهای رباط به ایدی\n@Devehsan\nمراجعه کنید."
+        )
 
 # اجرای ربات
 bot.run()
