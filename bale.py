@@ -125,8 +125,8 @@ async def on_callback(callback_query):
         )
         elif callback_query.data == "info":
     await callback_query.answer(
-        "این ربات توسط تیم شفق طراحی و توسعه داده شده است.\n"
-        "برای اطلاعات بیشتر و گزارش باگ‌ها و خطاهای ربات به آیدی\n@Devehsan\nمراجعه کنید."
+        "ربات صراط توسط تیم توسعه‌دهنده شفق ساخته شده است.\n"
+        "برای اطلاعات بیشتر به پیوی ما مراجعه کنید:\n@Devehsan"
     )
 # اجرای ربات
 bot.run()
