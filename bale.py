@@ -6,7 +6,7 @@ import jdatetime
 
 # تنظیمات ربات
 bot_token = "‏1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
-bot = Client("sirat_bot", bot_token=bot_token)
+bot = Client(bot_token)
 
 # تابع دریافت تاریخ و زمان
 def get_time():
