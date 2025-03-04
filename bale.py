@@ -1,11 +1,11 @@
 import requests
 from datetime import datetime
 import jdatetime
-from balepy import Client, types
+from balethon import Client, Message, Keyboard, InlineKeyboard
 
 # تنظیمات ربات
-BOT_TOKEN = "‏1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
-app = Client("sirat_bot", bot_token=BOT_TOKEN)
+BOT_TOKEN = "1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
+bot = Client(BOT_TOKEN)
 
 # ----------------- توابع پردازش داده -----------------
 
@@ -60,63 +60,54 @@ def translate_to_farsi(text):
 
 # دکمه‌های منوی اصلی
 def get_main_menu():
-    return types.ReplyMarkup([
-        [types.Button.text("📅 اعلام زمان", data="time")],
-        [types.Button.text("📖 حدیث تصادفی", data="hadith")],
-        [types.Button.text("🤖 چت با هوش مصنوعی", data="ai_chat")],
-        [types.Button.text("📦 پیگیری مرسوله تیپاکس", data="track_parcel")],
-        [types.Button.text("🌍 ترجمه به فارسی", data="translate")]
-    ])
+    return Keyboard([
+        ["📅 اعلام زمان"],
+        ["📖 حدیث تصادفی"],
+        ["🤖 چت با هوش مصنوعی"],
+        ["📦 پیگیری مرسوله تیپاکس"],
+        ["🌍 ترجمه به فارسی"]
+    ], resize_keyboard=True)
 
 # دکمه‌های بازگشت
 def get_back_button():
-    return types.ReplyMarkup([[types.Button.text("🔙 بازگشت به منو اصلی", data="back_to_menu")]])
+    return Keyboard([["🔙 بازگشت به منو اصلی"]], resize_keyboard=True)
 
-@app.on_message(types.MessageCommand("start"))
-async def on_start(ctx: types.Message):
-    await ctx.answer("👋 سلام! به ربات **صراط** خوش آمدید.\nیک گزینه را انتخاب کنید:", 
-                     reply_markup=get_main_menu())
+@bot.on_message()
+async def handle_message(client: Client, message: Message):
+    text = message.text
 
-# مدیریت دکمه‌ها
-@app.on_callback_query()
-async def on_callback(ctx: types.CallbackQuery):
-    if ctx.data == "time":
-        await ctx.answer(get_time(), reply_markup=get_back_button())
+    if text == "/start" or text == "🔙 بازگشت به منو اصلی":
+        await message.reply("👋 سلام! به ربات **صراط** خوش آمدید.\nیک گزینه را انتخاب کنید:", 
+                            reply_markup=get_main_menu())
 
-    elif ctx.data == "hadith":
-        await ctx.answer(get_hadith(), reply_markup=get_back_button())
+    elif text == "📅 اعلام زمان":
+        await message.reply(get_time(), reply_markup=get_back_button())
 
-    elif ctx.data == "ai_chat":
-        await ctx.answer("🗨 لطفاً سوال خود را ارسال کنید.", reply_markup=types.ReplyMarkup(force_reply=True))
+    elif text == "📖 حدیث تصادفی":
+        await message.reply(get_hadith(), reply_markup=get_back_button())
 
-    elif ctx.data == "track_parcel":
-        await ctx.answer("📦 لطفاً کد رهگیری مرسوله را ارسال کنید.", reply_markup=types.ReplyMarkup(force_reply=True))
+    elif text == "🤖 چت با هوش مصنوعی":
+        await message.reply("🗨 لطفاً سوال خود را ارسال کنید:", reply_markup=get_back_button())
+        bot.state.set(message.chat.id, "ai_chat")
 
-    elif ctx.data == "translate":
-        await ctx.answer("🌍 لطفاً متن مورد نظر برای ترجمه را ارسال کنید.", reply_markup=types.ReplyMarkup(force_reply=True))
+    elif text == "📦 پیگیری مرسوله تیپاکس":
+        await message.reply("📦 لطفاً کد رهگیری مرسوله را ارسال کنید:", reply_markup=get_back_button())
+        bot.state.set(message.chat.id, "track_parcel")
 
-    elif ctx.data == "back_to_menu":
-        await ctx.answer("🔙 برگشت به منو اصلی", reply_markup=get_main_menu())
+    elif text == "🌍 ترجمه به فارسی":
+        await message.reply("🌍 لطفاً متن مورد نظر برای ترجمه را ارسال کنید:", reply_markup=get_back_button())
+        bot.state.set(message.chat.id, "translate")
 
-# مدیریت ورودی‌های کاربر
-@app.on_message(types.Message)
-async def handle_user_message(ctx: types.Message):
-    if ctx.reply_to:
-        reply_text = ctx.reply_to.text
-
-        if "🗨 لطفاً سوال خود را ارسال کنید." in reply_text:
-            await ctx.reply(chat_with_ai(ctx.text), reply_markup=get_back_button())
-
-        elif "📦 لطفاً کد رهگیری مرسوله را ارسال کنید." in reply_text:
-            await ctx.reply(track_parcel(ctx.text), reply_markup=get_back_button())
-
-        elif "🌍 لطفاً متن مورد نظر برای ترجمه را ارسال کنید." in reply_text:
-            await ctx.reply(translate_to_farsi(ctx.text), reply_markup=get_back_button())
-
-        else:
-            await ctx.reply("⚠ دستور نامعتبر! لطفاً از دکمه‌ها استفاده کنید.", reply_markup=get_main_menu())
     else:
-        await ctx.reply("⚠ لطفاً ابتدا یک گزینه را انتخاب کنید.", reply_markup=get_main_menu())
+        state = bot.state.get(message.chat.id)
+        if state == "ai_chat":
+            await message.reply(chat_with_ai(text), reply_markup=get_back_button())
+        elif state == "track_parcel":
+            await message.reply(track_parcel(text), reply_markup=get_back_button())
+        elif state == "translate":
+            await message.reply(translate_to_farsi(text), reply_markup=get_back_button())
+        else:
+            await message.reply("⚠ دستور نامعتبر! لطفاً از دکمه‌ها استفاده کنید.", reply_markup=get_main_menu())
 
 # ----------------- اجرای ربات -----------------
-app.run()
+bot.run()
