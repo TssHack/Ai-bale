@@ -27,7 +27,9 @@ def get_hadith():
     url = "https://din-esi.onrender.com/random_hadith"
     response = requests.get(url)
     data = response.json()
-    return data.get("hadith", "حدیثی پیدا نشد.")
+    hadith = data.get("hadith", "حدیثی پیدا نشد.")
+    speaker = data.get("speaker", "نام گوینده پیدا نشد.")
+    return hadith, speaker
 
 # تابع چت با هوش مصنوعی اسلامی
 def chat_with_ai(user_message):
@@ -93,8 +95,8 @@ async def on_callback(callback_query):
             f"سال: {time_info['year']} 🎉"
         )
     elif callback_query.data == "hadith":
-        hadith = get_hadith()
-        await callback_query.answer(f"حدیث امروز: {hadith} 📖\n🗣️ {speaker}")
+        hadith, speaker = get_hadith()
+        await callback_query.answer(f"حدیث: {hadith} 📖\n🗣️ گوینده: {speaker}")
     elif callback_query.data == "ai_chat":
         await callback_query.answer("برای شروع چت با هوش مصنوعی پیامی ارسال کنید.")
         @bot.on_message()
@@ -114,19 +116,20 @@ async def on_callback(callback_query):
             translation = translate_to_farsi(message.text)
             await message.reply(translation, reply_markup=reply_keyboard)
     elif callback_query.data == "help":
-    await callback_query.answer(
-        "راهنمای ربات صراط:\n"
-        "1. اعلام زمان ⏰: نمایش زمان و تاریخ به شمسی و میلادی\n"
-        "2. حدیث گو 📖: دریافت حدیث روز\n"
-        "3. چت با هوش مصنوعی 🤖: چت با هوش مصنوعی اسلامی\n"
-        "4. پیگیری مرسوله تیپاکس 📦: پیگیری وضعیت مرسوله\n"
-        "5. ترجمه به فارسی 📝: ترجمه متنی به فارسی\n"
-        "6. اطلاعات سازنده 🧑‍💻: اطلاعات سازنده ربات"
-    )
-elif callback_query.data == "info":
-    await callback_query.answer(
-        "ربات صراط توسط تیم توسعه‌دهنده شفق ساخته شده است.\n"
-        "برای اطلاعات بیشتر به پیوی ما مراجعه کنید:\n@Devehsan"
-    )
+        await callback_query.answer(
+            "راهنمای ربات صراط:\n"
+            "1. اعلام زمان ⏰: نمایش زمان و تاریخ به شمسی و میلادی\n"
+            "2. حدیث گو 📖: دریافت حدیث روز\n"
+            "3. چت با هوش مصنوعی 🤖: چت با هوش مصنوعی اسلامی\n"
+            "4. پیگیری مرسوله تیپاکس 📦: پیگیری وضعیت مرسوله\n"
+            "5. ترجمه به فارسی 📝: ترجمه متنی به فارسی\n"
+            "6. اطلاعات سازنده 🧑‍💻: اطلاعات سازنده ربات"
+        )
+    elif callback_query.data == "info":
+        await callback_query.answer(
+            "ربات صراط توسط تیم توسعه‌دهنده شفق ساخته شده است.\n"
+            "برای اطلاعات بیشتر به پیوی ما مراجعه کنید:\n@Devehsan"
+        )
+
 # اجرای ربات
 bot.run()
