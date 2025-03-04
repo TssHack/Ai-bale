@@ -27,9 +27,7 @@ def get_hadith():
     url = "https://din-esi.onrender.com/random_hadith"
     response = requests.get(url)
     data = response.json()
-    hadith = data.get("hadith", "حدیثی پیدا نشد.")
-    speaker = data.get("speaker", "نام گوینده پیدا نشد.")
-    return hadith, speaker
+    return data.get("hadith", "حدیثی پیدا نشد."), data.get("speaker", "نام سخنران پیدا نشد.")
 
 # تابع چت با هوش مصنوعی اسلامی
 def chat_with_ai(user_message):
@@ -63,16 +61,21 @@ def translate_to_farsi(text):
 # دکمه‌های اینلاین برای منوی اصلی
 inline_buttons = InlineKeyboard(
     [("اعلام زمان ⏰", "time"), ("حدیث گو 📖", "hadith")],
-    [("چت با هوش مصنوعی 🤖", "ai_chat"), ("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
+    [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
+    [("چت با هوش مصنوعی 🤖", "ai_chat")],
     [("ترجمه به فارسی 📝", "translate"), ("راهنما ❓", "help")],
     [("اطلاعات سازنده 🧑‍💻", "info")]
 )
+
+# دکمه برگشت به منو اصلی در حالت چت با هوش مصنوعی
+return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
 
 # دکمه برگشت به منو اصلی
 reply_keyboard = ReplyKeyboard(
     ["منوی اصلی 🏠"]
 )
 
+# مدیریت پیام‌های ابتدایی
 @bot.on_message()
 async def on_start(message):
     await message.reply(
@@ -94,27 +97,29 @@ async def on_callback(callback_query):
             f"ماه: {time_info['month']} 🌙\n"
             f"سال: {time_info['year']} 🎉"
         )
+        await callback_query.message.reply(
+            "لطفاً گزینه مورد نظر خود را انتخاب کنید:",
+            reply_markup=inline_buttons
+        )
     elif callback_query.data == "hadith":
         hadith, speaker = get_hadith()
-        await callback_query.answer(f"حدیث: {hadith} 📖\n🗣️ گوینده: {speaker}")
-    elif callback_query.data == "ai_chat":
-        await callback_query.answer("برای شروع چت با هوش مصنوعی پیامی ارسال کنید.")
-        @bot.on_message()
-        async def on_message_ai(message):
-            ai_response = chat_with_ai(message.text)
-            await message.reply(ai_response, reply_markup=reply_keyboard)
+        await callback_query.answer(f"حدیث امروز: {hadith} 📖\n🗣️ {speaker}")
+        await callback_query.message.reply(
+            "لطفاً گزینه مورد نظر خود را انتخاب کنید:",
+            reply_markup=inline_buttons
+        )
     elif callback_query.data == "track_parcel":
         await callback_query.answer("لطفاً کد رهگیری مرسوله را وارد کنید.")
         @bot.on_message()
         async def on_message_tracking(message):
             parcel_info = track_parcel(message.text)
-            await message.reply(parcel_info, reply_markup=reply_keyboard)
+            await message.reply(parcel_info, reply_markup=inline_buttons)
     elif callback_query.data == "translate":
         await callback_query.answer("لطفاً متنی که می‌خواهید ترجمه شود را ارسال کنید.")
         @bot.on_message()
         async def on_message_translation(message):
             translation = translate_to_farsi(message.text)
-            await message.reply(translation, reply_markup=reply_keyboard)
+            await message.reply(translation, reply_markup=inline_buttons)
     elif callback_query.data == "help":
         await callback_query.answer(
             "راهنمای ربات صراط:\n"
@@ -125,10 +130,37 @@ async def on_callback(callback_query):
             "5. ترجمه به فارسی 📝: ترجمه متنی به فارسی\n"
             "6. اطلاعات سازنده 🧑‍💻: اطلاعات سازنده ربات"
         )
+        await callback_query.message.reply(
+            "لطفاً گزینه مورد نظر خود را انتخاب کنید:",
+            reply_markup=inline_buttons
+        )
     elif callback_query.data == "info":
         await callback_query.answer(
             "ربات صراط توسط تیم توسعه‌دهنده شفق ساخته شده است.\n"
             "برای اطلاعات بیشتر به پیوی ما مراجعه کنید:\n@Devehsan"
+        )
+        await callback_query.message.reply(
+            "لطفاً گزینه مورد نظر خود را انتخاب کنید:",
+            reply_markup=inline_buttons
+        )
+    elif callback_query.data == "ai_chat":
+        await callback_query.answer("برای شروع چت با هوش مصنوعی پیامی ارسال کنید.")
+        
+        # تعریف تابع برای دریافت پیام و پاسخ از هوش مصنوعی
+        @bot.on_message()
+        async def on_message_ai(message):
+            ai_response = chat_with_ai(message.text)
+            await message.reply(ai_response, reply_markup=return_to_main_menu_button)
+            await message.reply(
+                "برای بازگشت به منوی اصلی، دستور /start را ارسال کنید.",
+                reply_markup=return_to_main_menu_button
+            )
+
+    elif callback_query.data == "return_to_main_menu":
+        await callback_query.answer("به منوی اصلی بازگشتید.")
+        await callback_query.message.reply(
+            "لطفاً گزینه مورد نظر خود را انتخاب کنید:",
+            reply_markup=inline_buttons
         )
 
 # اجرای ربات
