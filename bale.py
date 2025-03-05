@@ -20,13 +20,12 @@ def get_time():
     return {
         "shamsi_date": jalali_date.strftime("%Y/%m/%d"),
         "gregorian_date": now.strftime("%Y-%m-%d"),
-        "hijri_date": now.strftime("%d/%m/%Y"),  # تاریخ قمری
+        "hijri_date": now.strftime("%d/%m/%Y"),
         "time": now.strftime("%H:%M:%S"),
         "day": jalali_date.strftime("%A"),
         "month": jalali_date.strftime("%B"),
         "year": jalali_date.year,
-        "full_date": jalali_date.strftime("%A, %d %B %Y"),  # تاریخ کامل به شمسی
-        "full_time": now.strftime("%A, %d %B %Y, %H:%M:%S")  # تاریخ و زمان کامل
+        "full_time": now.strftime("%A, %d %B %Y, %H:%M:%S")
     }
 
 # تابع دریافت حدیث
@@ -58,15 +57,10 @@ def track_parcel(tracking_code):
             receiver = results["receiver"]
             status_info = results["status_info"]
             return f"""📤 فرستنده: {sender['name']} از {sender['city']}
-📦 تعداد مرسولات: {results['dispatch_count']}
-💸 هزینه پستی: {results['package_cost']} تومان
-💳 نوع پرداخت: {results['pay_type']}
-🛳 وزن مرسوله: {results['weight']}
-📍 فاصله: {results['city_distance']} کیلومتر
 📥 گیرنده: {receiver['name']} در {receiver['city']}
-💲 هزینه کل: {results['total_cost']} تومان
-
-وضعیت‌های مرسوله:
+💸 هزینه پستی: {results['package_cost']} تومان
+🛳 وزن مرسوله: {results['weight']}
+وضعیت‌ها:
 {', '.join([f"{status['date']} - {status['status']}" for status in status_info])}"""
         return "اطلاعات مرسوله پیدا نشد."
     except:
@@ -81,17 +75,43 @@ def translate_to_farsi(text):
     except:
         return "مشکلی در ترجمه متن رخ داد."
 
+# تابع دریافت جوک
+def get_joke():
+    try:
+        response = requests.get("https://open.wiki-api.ir/apis-1/4Jok?page=500")
+        data = response.json()
+        return data["results"]["post"] if data["status"] else "جوکی پیدا نشد."
+    except:
+        return "مشکلی در دریافت جوک رخ داد."
+
+# تابع دریافت نرخ طلا و سکه
+def get_gold_rate():
+    try:
+        response = requests.get("https://open.wiki-api.ir/apis-1/GoldRate")
+        data = response.json()
+        if data["status"]:
+            prices = data["results"]["prices"]
+            result = "💰 نرخ طلا و سکه:\n"
+            for item in prices:
+                name = item["name"]
+                price = item["price"]
+                sign = "🔺" if item["is_positive"] else "🔻"
+                result += f"{name}: {price} ریال {sign}\n"
+            return result
+        return "نرخ طلا و سکه پیدا نشد."
+    except:
+        return "مشکلی در دریافت نرخ طلا و سکه رخ داد."
+
 # دکمه‌های اینلاین
 inline_buttons = InlineKeyboard(
     [("اعلام زمان ⏰", "time"), ("حدیث گو 📖", "hadith")],
-    [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
-    [("دستیار مومن 🤖", "ai_chat")],
+    [("پیگیری مرسوله تیپاکس 📦", "track_parcel"), ("نرخ طلا و سکه 💰", "gold_rate")],
+    [("جوک بگو 😂", "joke"), ("دستیار مومن 🤖", "ai_chat")],
     [("ترجمه به فارسی 📝", "translate"), ("راهنما ❓", "help")],
     [("اطلاعات سازنده 🧑‍💻", "info")]
 )
 
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
-reply_keyboard = ReplyKeyboard(["منوی اصلی 🏠"])
 
 # مدیریت پیام‌ها
 @bot.on_message()
@@ -99,23 +119,17 @@ async def handle_message(message):
     chat_id = message.chat.id
     state = user_states.get(chat_id)
 
-    if state is None:  # اگر وضعیت None بود، یعنی پیام ابتدایی است
-        user_states[chat_id] = None  # ریست وضعیت کاربر
+    if state is None:
         await message.reply("سلام! به ربات صراط خوش آمدید.\nلطفاً گزینه مورد نظر خود را انتخاب کنید:", reply_markup=inline_buttons)
     elif state == "tracking":
-        response = track_parcel(message.text)
-        await message.reply(response, reply_markup=inline_buttons)
+        await message.reply(track_parcel(message.text), reply_markup=inline_buttons)
     elif state == "translate":
-        response = translate_to_farsi(message.text)
-        await message.reply(response, reply_markup=inline_buttons)
+        await message.reply(translate_to_farsi(message.text), reply_markup=inline_buttons)
     elif state == "ai_chat":
-        response = chat_with_ai(message.text)
-        await message.reply(response, reply_markup=return_to_main_menu_button)
-        user_states[chat_id] = "ai_chat"  # نگه‌داشتن وضعیت برای ادامه چت
+        await message.reply(chat_with_ai(message.text), reply_markup=return_to_main_menu_button)
 
-    # ریست وضعیت کاربر بعد از پردازش پیام (اگر نه در حالت چت هوش مصنوعی نباشد)
     if state != "ai_chat":
-        user_states[chat_id] = None  # ریست وضعیت کاربر بعد از پردازش پیام
+        user_states[chat_id] = None
 
 # مدیریت دکمه‌های اینلاین
 @bot.on_callback_query()
@@ -123,22 +137,11 @@ async def on_callback(callback_query):
     chat_id = callback_query.message.chat.id
 
     if callback_query.data == "time":
-        time_info = get_time()
-        await callback_query.message.edit_text(
-            f"""🕰️ زمان:
-{time_info['full_time']}
-📆 تاریخ شمسی: {time_info['shamsi_date']}
-🌍 تاریخ میلادی: {time_info['gregorian_date']}
-🌙 تاریخ قمری: {time_info['hijri_date']}
-📅 روز هفته: {time_info['day']}
-🗓 ماه: {time_info['month']}
-📅 سال: {time_info['year']}""",
-            reply_markup=inline_buttons
-        )
+        await callback_query.message.edit_text(str(get_time()), reply_markup=inline_buttons)
 
     elif callback_query.data == "hadith":
         hadith, speaker = get_hadith()
-        await callback_query.message.edit_text(f"📖 حدیث:\n{hadith}\n🗣️ {speaker}", reply_markup=inline_buttons)
+        await callback_query.message.edit_text(f"📖 {hadith}\n🗣️ {speaker}", reply_markup=inline_buttons)
 
     elif callback_query.data == "track_parcel":
         user_states[chat_id] = "tracking"
@@ -146,14 +149,17 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "translate":
         user_states[chat_id] = "translate"
-        await callback_query.message.edit_text("لطفاً متن مورد نظر را ارسال کنید.")
+        await callback_query.message.edit_text("لطفاً متن خود را ارسال کنید.")
 
     elif callback_query.data == "ai_chat":
         user_states[chat_id] = "ai_chat"
-        await callback_query.message.edit_text("پیام خود را ارسال کنید تا پاسخ دریافت کنید.")
+        await callback_query.message.edit_text("پیام خود را ارسال کنید.")
 
-    elif callback_query.data == "help":
-        await callback_query.message.edit_text("راهنمای ربات:\n1. اعلام زمان\n2. حدیث روز\n3. چت با دستیار مومن\n4. پیگیری مرسوله تیپاکس\n5. ترجمه به فارسی\n6. اطلاعات سازنده", reply_markup=inline_buttons)
+    elif callback_query.data == "joke":
+        await callback_query.message.edit_text(f"😂 {get_joke()}", reply_markup=inline_buttons)
+
+    elif callback_query.data == "gold_rate":
+        await callback_query.message.edit_text(get_gold_rate(), reply_markup=inline_buttons)
 
     elif callback_query.data == "info":
         await callback_query.message.edit_text("ربات توسط تیم شفق ساخته شده است. ارتباط: @Devehsan", reply_markup=inline_buttons)
