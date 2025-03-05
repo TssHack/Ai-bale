@@ -2,15 +2,18 @@ from balethon import Client
 from balethon.objects import InlineKeyboard, ReplyKeyboard
 import requests
 from datetime import datetime
+import pytz
 import jdatetime
 
 # تنظیمات ربات
 bot_token = "1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
 bot = Client(bot_token)
 
-# تابع دریافت تاریخ و زمان
+# تابع دریافت تاریخ و زمان به وقت ایران
 def get_time():
-    now = datetime.now()
+    # منطقه زمانی تهران (GMT+3:30)
+    iran_timezone = pytz.timezone('Asia/Tehran')
+    now = datetime.now(iran_timezone)
     jalali_date = jdatetime.date.fromgregorian(date=now)
     time_info = {
         "shamsi_date": jalali_date.strftime("%Y/%m/%d"),
@@ -67,7 +70,7 @@ inline_buttons = InlineKeyboard(
     [("اطلاعات سازنده 🧑‍💻", "info")]
 )
 
-# دکمه برگشت به منو اصلی در حالت چت با هوش مصنوعی
+# دکمه برگشت به منو اصلی در حالت چت با دستیار مومن
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
 
 # دکمه برگشت به منو اصلی
@@ -149,17 +152,19 @@ async def on_callback(callback_query):
         # تعریف تابع برای دریافت پیام و پاسخ از دستیار مومن
         @bot.on_message()
         async def on_message_ai(message):
-            # تغییر API URL به آدرس جدید
-            url = f"https://momen-api.onrender.com/?text={message.text}"
-            response = requests.get(url)
-            data = response.json()
-            ai_response = data.get("message", "پاسخی از دستیار مومن دریافت نشد.")
-            
-            await message.reply(ai_response, reply_markup=return_to_main_menu_button)
-            await message.reply(
-                "برای بازگشت به منوی اصلی، دستور /start را ارسال کنید.",
-                reply_markup=return_to_main_menu_button
-            )
+            # جلوگیری از تداخل با منو اصلی
+            if message.text:
+                # ارسال پیام به دستیار مومن
+                url = f"https://momen-api.onrender.com/?text={message.text}"
+                response = requests.get(url)
+                data = response.json()
+                ai_response = data.get("message", "پاسخی از دستیار مومن دریافت نشد.")
+                
+                await message.reply(ai_response, reply_markup=return_to_main_menu_button)
+                await message.reply(
+                    "برای بازگشت به منوی اصلی، دستور /start را ارسال کنید.",
+                    reply_markup=return_to_main_menu_button
+                )
 
     elif callback_query.data == "return_to_main_menu":
         await callback_query.answer("به منوی اصلی بازگشتید.")
