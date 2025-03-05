@@ -197,7 +197,7 @@ async def handle_message(message):
         await message.reply(response, reply_markup=inline_buttons)
     elif state == "ai_chat":
         response = chat_with_ai(message.text)
-        await message.reply(response, reply_markup=return_to_main_menu_button)
+        await message.reply(response)
     elif state == "generate_image":
         image = generate_image_from_text(message.text)
         if image:
