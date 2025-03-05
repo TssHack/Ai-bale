@@ -5,7 +5,7 @@ from datetime import datetime
 import jdatetime
 
 # تنظیمات ربات
-bot_token = "1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
+bot_token = "1752263879:AR7EWOyRTpIcTXyQG7k3ZbHFBaAyFV43rEC8krO"
 bot = Client(bot_token)
 
 # دیکشنری ذخیره وضعیت کاربران
@@ -78,11 +78,26 @@ inline_buttons = InlineKeyboard(
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
 reply_keyboard = ReplyKeyboard(["منوی اصلی 🏠"])
 
-# مدیریت پیام‌های ابتدایی
+# مدیریت پیام‌ها
 @bot.on_message()
-async def on_start(message):
-    user_states[message.chat.id] = None  # ریست وضعیت کاربر
-    await message.reply("سلام! به ربات صراط خوش آمدید.\nلطفاً گزینه مورد نظر خود را انتخاب کنید:", reply_markup=inline_buttons)
+async def handle_message(message):
+    chat_id = message.chat.id
+    state = user_states.get(chat_id)
+
+    if state is None:  # اگر وضعیت None بود، یعنی پیام ابتدایی است
+        user_states[chat_id] = None  # ریست وضعیت کاربر
+        await message.reply("سلام! به ربات صراط خوش آمدید.\nلطفاً گزینه مورد نظر خود را انتخاب کنید:", reply_markup=inline_buttons)
+    elif state == "tracking":
+        response = track_parcel(message.text)
+        await message.reply(response, reply_markup=inline_buttons)
+    elif state == "translate":
+        response = translate_to_farsi(message.text)
+        await message.reply(response, reply_markup=inline_buttons)
+    elif state == "ai_chat":
+        response = chat_with_ai(message.text)
+        await message.reply(response, reply_markup=return_to_main_menu_button)
+
+    user_states[chat_id] = None  # ریست وضعیت کاربر بعد از پردازش پیام
 
 # مدیریت دکمه‌های اینلاین
 @bot.on_callback_query()
@@ -121,24 +136,6 @@ async def on_callback(callback_query):
     elif callback_query.data == "return_to_main_menu":
         user_states[chat_id] = None
         await callback_query.message.edit_text("به منوی اصلی بازگشتید.", reply_markup=inline_buttons)
-
-# پردازش ورودی کاربران
-@bot.on_message()
-async def handle_message(message):
-    chat_id = message.chat.id
-    state = user_states.get(chat_id)
-
-    if state == "tracking":
-        response = track_parcel(message.text)
-        await message.reply(response, reply_markup=inline_buttons)
-    elif state == "translate":
-        response = translate_to_farsi(message.text)
-        await message.reply(response, reply_markup=inline_buttons)
-    elif state == "ai_chat":
-        response = chat_with_ai(message.text)
-        await message.reply(response, reply_markup=return_to_main_menu_button)
-    
-    user_states[chat_id] = None  # ریست وضعیت کاربر
 
 # اجرای ربات
 bot.run()
