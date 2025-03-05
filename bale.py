@@ -77,9 +77,14 @@ reply_keyboard = ReplyKeyboard(
     ["منوی اصلی 🏠"]
 )
 
+# متغیر برای شناسایی وضعیت چت
+is_in_ai_chat = False
+
 # مدیریت پیام‌های ابتدایی
 @bot.on_message()
 async def on_start(message):
+    global is_in_ai_chat
+    is_in_ai_chat = False  # اطمینان از اینکه کاربر از حالت چت خارج شده است
     await message.reply(
         "سلام! به ربات صراط خوش آمدید.\nلطفاً گزینه مورد نظر خود را انتخاب کنید:",
         reply_markup=inline_buttons
@@ -88,6 +93,8 @@ async def on_start(message):
 # مدیریت انتخاب‌های دکمه‌های اینلاین
 @bot.on_callback_query()
 async def on_callback(callback_query):
+    global is_in_ai_chat
+    
     if callback_query.data == "time":
         time_info = get_time()
         await callback_query.answer(
@@ -146,11 +153,14 @@ async def on_callback(callback_query):
             reply_markup=inline_buttons
         )
     elif callback_query.data == "ai_chat":
+        is_in_ai_chat = True  # فعال کردن حالت چت
         await callback_query.answer("برای شروع چت با دستیار مومن پیامی ارسال کنید.")
         
         # تعریف تابع برای دریافت پیام و پاسخ از دستیار مومن
         @bot.on_message()
         async def on_message_ai(message):
+            if not is_in_ai_chat:  # اطمینان از اینکه پیام در زمان چت ارسال شود
+                return
             ai_response = chat_with_ai(message.text)
             await message.reply(ai_response, reply_markup=return_to_main_menu_button)
             await message.reply(
@@ -159,6 +169,7 @@ async def on_callback(callback_query):
             )
 
     elif callback_query.data == "return_to_main_menu":
+        is_in_ai_chat = False  # خارج شدن از حالت چت
         await callback_query.answer("به منوی اصلی بازگشتید.")
         await callback_query.message.reply(
             "لطفاً گزینه مورد نظر خود را انتخاب کنید:",
