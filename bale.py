@@ -11,7 +11,6 @@ bot = Client(bot_token)
 
 # تابع دریافت تاریخ و زمان به وقت ایران
 def get_time():
-    # منطقه زمانی تهران (GMT+3:30)
     iran_timezone = pytz.timezone('Asia/Tehran')
     now = datetime.now(iran_timezone)
     jalali_date = jdatetime.date.fromgregorian(date=now)
@@ -128,7 +127,7 @@ async def on_callback(callback_query):
             "راهنمای ربات صراط:\n"
             "1. اعلام زمان ⏰: نمایش زمان و تاریخ به شمسی و میلادی\n"
             "2. حدیث گو 📖: دریافت حدیث روز\n"
-            "3. دستیار مومن 🤖: چت با دستیار مومن\n"  # تغییر نام به دستیار مومن
+            "3. دستیار مومن 🤖: چت با دستیار مومن\n"
             "4. پیگیری مرسوله تیپاکس 📦: پیگیری وضعیت مرسوله\n"
             "5. ترجمه به فارسی 📝: ترجمه متنی به فارسی\n"
             "6. اطلاعات سازنده 🧑‍💻: اطلاعات سازنده ربات"
@@ -152,19 +151,12 @@ async def on_callback(callback_query):
         # تعریف تابع برای دریافت پیام و پاسخ از دستیار مومن
         @bot.on_message()
         async def on_message_ai(message):
-            # جلوگیری از تداخل با منو اصلی
-            if message.text:
-                # ارسال پیام به دستیار مومن
-                url = f"https://momen-api.onrender.com/?text={message.text}"
-                response = requests.get(url)
-                data = response.json()
-                ai_response = data.get("message", "پاسخی از دستیار مومن دریافت نشد.")
-                
-                await message.reply(ai_response, reply_markup=return_to_main_menu_button)
-                await message.reply(
-                    "برای بازگشت به منوی اصلی، دستور /start را ارسال کنید.",
-                    reply_markup=return_to_main_menu_button
-                )
+            ai_response = chat_with_ai(message.text)
+            await message.reply(ai_response, reply_markup=return_to_main_menu_button)
+            await message.reply(
+                "برای بازگشت به منوی اصلی، دستور /start را ارسال کنید.",
+                reply_markup=return_to_main_menu_button
+            )
 
     elif callback_query.data == "return_to_main_menu":
         await callback_query.answer("به منوی اصلی بازگشتید.")
