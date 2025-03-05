@@ -96,8 +96,11 @@ async def handle_message(message):
     elif state == "ai_chat":
         response = chat_with_ai(message.text)
         await message.reply(response, reply_markup=return_to_main_menu_button)
+        user_states[chat_id] = "ai_chat"  # نگه‌داشتن وضعیت برای ادامه چت
 
-    user_states[chat_id] = None  # ریست وضعیت کاربر بعد از پردازش پیام
+    # ریست وضعیت کاربر بعد از پردازش پیام (اگر نه در حالت چت هوش مصنوعی نباشد)
+    if state != "ai_chat":
+        user_states[chat_id] = None  # ریست وضعیت کاربر بعد از پردازش پیام
 
 # مدیریت دکمه‌های اینلاین
 @bot.on_callback_query()
