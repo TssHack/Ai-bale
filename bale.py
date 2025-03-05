@@ -67,31 +67,6 @@ def track_parcel(tracking_code):
     except:
         return "مشکلی در دریافت اطلاعات مرسوله رخ داد."
 
-# تابع تولید عکس از متن
-def generate_image_from_text(query):
-    try:
-        response = requests.get(f"https://open.wiki-api.ir/apis-1/MakePhotoAi?q={query}")
-        data = response.json()
-        if data["status"]:
-            image_url = data["results"]["img"]
-            image_response = requests.get(image_url)
-            image = BytesIO(image_response.content)  # تبدیل محتوای تصویر به بایت‌استریم
-            return image
-        return None
-    except:
-        return None
-
-# تابع دریافت جوک رندوم
-def get_joke():
-    try:
-        response = requests.get("https://open.wiki-api.ir/apis-1/GoldRate")
-        data = response.json()
-        if data["status"]:
-            return data["results"]["post"]
-        return "جوکی پیدا نشد."
-    except:
-        return "مشکلی در دریافت جوک رخ داد."
-
 # تابع دریافت قیمت طلا و سکه
 def get_gold_rate():
     try:
@@ -153,10 +128,6 @@ async def on_callback(callback_query):
         user_states[chat_id] = "tracking"
         await callback_query.message.edit_text("لطفاً کد رهگیری را ارسال کنید.")
 
-    elif callback_query.data == "translate":
-        user_states[chat_id] = "translate"
-        await callback_query.message.edit_text("لطفاً متن مورد نظر را ارسال کنید.")
-
     elif callback_query.data == "ai_chat":
         user_states[chat_id] = "ai_chat"
         await callback_query.message.edit_text("پیام خود را ارسال کنید تا پاسخ دریافت کنید.")
@@ -192,9 +163,6 @@ async def handle_message(message):
     if state == "tracking":
         response = track_parcel(message.text)
         await message.reply(response, reply_markup=inline_buttons)
-    elif state == "translate":
-        response = translate_to_farsi(message.text)
-        await message.reply(response, reply_markup=inline_buttons)
     elif state == "ai_chat":
         response = chat_with_ai(message.text)
         await message.reply(response)
@@ -205,8 +173,7 @@ async def handle_message(message):
         else:
             await message.reply("متاسفانه تصویری تولید نشد.", reply_markup=inline_buttons)
 
-    # ریست وضعیت کاربر بعد از پردازش پیام (اگر نه در حالت چت هوش مصنوعی نباشد)
-    if state != "ai_chat":
+    elif state != "ai_chat":
         user_states[chat_id] = None  # ریست وضعیت کاربر بعد از پردازش پیام
 
 # اجرای ربات
