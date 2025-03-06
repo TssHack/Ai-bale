@@ -105,8 +105,13 @@ def get_translate(text):
     except:
         return "مشکلی در ترجمه رخ داد."
 
-# تابع پیگیری مرسوله تیپاکس
+# تابع پیگیری مرسوله تیپاکسimport requests
+
 def track_parcel(tracking_code):
+    # بررسی اینکه آیا کد رهگیری 21 رقمی است
+    if len(tracking_code) != 21 or not tracking_code.isdigit():
+        return "❌ کد رهگیری باید ۲۱ رقمی و عددی باشد."
+
     try:
         response = requests.get(f"https://open.wiki-api.ir/apis-1/TipaxInfo?code={tracking_code}")
         
@@ -176,7 +181,6 @@ def get_gold_rate():
     except:
         return "مشکلی در دریافت نرخ طلا و سکه رخ داد."
 
-# تنظیم منطقه به فارسی
 locale.setlocale(locale.LC_TIME, 'fa_IR')
 
 def calculate_age(birthdate_text):
@@ -196,8 +200,10 @@ def calculate_age(birthdate_text):
     # تبدیل تاریخ تولد به شمسی
     birthdate_jalali = jdatetime.date.fromgregorian(date=birthdate)
 
-    # محاسبه تعداد روزهای گذشته و تا تولد بعدی
-    days_since_birth = (today - birthdate).days
+    # محاسبه تعداد روزهای گذشته از تولد
+    days_since_birth = (today - birthdate).days  # تعداد روزهای گذشته از تولد
+
+    # محاسبه تعداد روزهای باقی‌مانده تا تولد بعدی
     next_birthday = datetime(today.year, birthdate.month, birthdate.day)
     if today > next_birthday:
         next_birthday = datetime(today.year + 1, birthdate.month, birthdate.day)
@@ -217,8 +223,16 @@ def calculate_age(birthdate_text):
     }
     birth_weekday_farsi = weekdays_farsi.get(birth_weekday, birth_weekday)
 
-    # محاسبه عدد شمع تولد
-    birth_number = sum([int(digit) for digit in str(birthdate.year)])
+    # محاسبه عدد شمع تولد (یک واحد بیشتر از سن)
+    birth_number = age + 1
+
+    # محاسبه حیوان سال تولد با ایموجی
+    chinese_zodiac_animals = [
+        ('موش', '🐭'), ('گاو', '🐂'), ('ببر', '🐅'), ('خرگوش', '🐇'),
+        ('اژدها', '🐉'), ('مار', '🐍'), ('اسب', '🐎'), ('بز', '🐐'),
+        ('میمون', '🐒'), ('مرغ', '🐔'), ('سگ', '🐕'), ('خوک', '🐖')
+    ]
+    zodiac_animal, zodiac_emoji = chinese_zodiac_animals[birthdate.year % 12]
 
     return f"""
 🌟 **اطلاعات سن شما** 🌟
@@ -235,6 +249,8 @@ def calculate_age(birthdate_text):
 🕰️ **تاریخ امروز:** {today.strftime('%Y-%m-%d')} (میلادی)
 
 🔢 **عدد شمع تولد شما:** {birth_number}
+
+🐀 **حیوان سال تولد شما:** {zodiac_animal} {zodiac_emoji}
 """
     return result
     
@@ -353,7 +369,7 @@ async def on_callback(callback_query):
         await callback_query.message.edit_text("🧠 پیام خود را برای روانشناس ارسال کنید:")
 
     elif callback_query.data == "help":
-        await callback_query.message.edit_text("❓ **راهنمای ربات صراط** ❓\n\n🔹 برای استفاده از امکانات، یکی از گزینه‌های منو را انتخاب کنید.\n🔹 هر بخش دارای قابلیت‌های منحصربه‌فردی است که می‌توانید از آن بهره ببرید.\n\n📌 در صورت نیاز به راهنمایی بیشتر، با پشتیبانی در ارتباط باشید.", reply_markup=inline_buttons)
+        await callback_query.message.edit_text("❓ **راهنمای ربات صراط** ❓\n\n🔹 برای استفاده از امکانات، یکی از گزینه‌های منو را انتخاب کنید.\n🔹 هر بخش دارای قابلیت‌های منحصربه‌فردی است که می‌توانید از آن بهره ببرید.\n\n📌 در صورت نیاز به راهنمایی بیشتر، با پشتیبانی در ارتباط باشید.\n👨‍💻 @Devehsan", reply_markup=inline_buttons)
 
     elif callback_query.data == "info":
         await callback_query.message.edit_text("🧑‍💻 این ربات با افتخار توسط **احسان فضلی** و تیم **شفق** توسعه یافته است.\n\n🔹 ارائه‌دهنده خدمات هوش مصنوعی و ابزارهای کاربردی اسلامی 🔹", reply_markup=inline_buttons)
