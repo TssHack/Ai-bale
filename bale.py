@@ -12,18 +12,17 @@ import pytz
 bot_token = "‏‏1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
 bot = Client(bot_token)
 
-channel_username = "4792476231"  # نام کاربری کانال خود را جایگزین کنید
+channel_username = "@your_channel"  # نام کاربری کانال خود را جایگزین کنید
 
 # تابع بررسی عضویت کاربر در کانال
 def is_user_joined(user_id):
     url = f"https://api.bale.ai/bot{bot_token}/getChatMember?chat_id={channel_username}&user_id={user_id}"
     response = requests.get(url)
-    data = response.json()
+    if response.status_code != 200:
+        return False
     
-    if data.get("ok") and data["result"]["status"] in ["member", "administrator", "creator"]:
-        return True
-    return False
-
+    data = response.json()
+    return data.get("ok", False) and data["result"]["status"] in ["member", "administrator", "creator"]
 # دیکشنری ذخیره وضعیت کاربران
 user_states = {}
 
@@ -281,25 +280,22 @@ inline_buttons = InlineKeyboard(
 )
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
 
-join_button = InlineKeyboard(
-    [("🔗 عضویت در کانال", f"https://t.me/{channel_username[1:]}")]
-)
-
 
 
 # مدیریت پیام‌ها
 @bot.on_message()
 async def handle_message(message):
     chat_id = message.chat.id
+    user_id = message.from_user.id
     state = user_states.get(chat_id)
 
     if not is_user_joined(user_id):
         await message.reply(
-            "برای استفاده از ربات لطفاً ابتدا در کانال زیر عضو شوید ⬇️",
-            reply_markup=join_button
+            "لطفاً ابتدا در کانال زیر عضو شوید:",
+            reply_markup=InlineKeyboard([("🔗 عضویت در کانال", f"https://t.me/{channel_username[1:]}")])
         )
         return
-
+        
     if state is None:
         await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
 
