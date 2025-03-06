@@ -64,6 +64,14 @@ def get_hadith():
     except:
         return "مشکلی در دریافت حدیث رخ داد.", "نامشخص"
 
+def get_fact():
+    try:
+        response = requests.get("https://fact-api.onrender.com/f")
+        data = response.json()
+        return data.get("fact", "دانستی پیدا نشد."), data.get("source", "منبع پیدا نشد.")
+    except:
+        return "مشکلی در دریافت دانستنی رخ داد.", "نامشخص"
+
 # تابع چت با هوش مصنوعی اسلامی
 def chat_with_ai(user_message):
     try:
@@ -119,7 +127,7 @@ def track_parcel(tracking_code):
 
 def get_joke():
     try:
-        response = requests.get("https://open.wiki-api.ir/apis-1/4Jok?page=500")
+        response = requests.get("https://open.wiki-api.ir/apis-1/4Jok")
         data = response.json()
         return f"😂 {data['results']['post']}"
     except:
@@ -180,7 +188,7 @@ inline_buttons = InlineKeyboard(
     [("دریافت نرخ طلا و سکه 💰", "gold_rate")],
     [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
     [("دستیار مومن 🤖", "ai_chat")],
-    [("ترجمه 📝", "translate"), ("جوک رندوم 😂", "random_joke")],
+    [("ترجمه 📝", "translate"), ("جوک تصادفی 😂", "random_joke")],
     [("وکیل ⚖️", "lawyer")],
     [("روانشناس 🧠", "psychologist")],
     [("محاسبه سن 🎂", "calculate_age")],
@@ -247,6 +255,10 @@ async def on_callback(callback_query):
     elif callback_query.data == "hadith":
         hadith, speaker = get_hadith()
         await callback_query.message.edit_text(f"📖 **حدیث:**\n{hadith}\n🗣️ **{speaker}**", reply_markup=inline_buttons)
+
+    elif callback_query.data == "facts":
+        fact, source = get_fact()
+        await callback_query.message.edit_text(f"📌 **فکت:**\n{fact}\n✏️ **{source}**", reply_markup=inline_buttons)
 
     elif callback_query.data == "track_parcel":
         user_states[chat_id] = "tracking"
