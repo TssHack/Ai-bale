@@ -208,6 +208,16 @@ async def handle_message(message):
         await message.reply(response, reply_markup=inline_buttons)
         user_states[chat_id] = None  
 
+    elif state == "get_translate":
+        translation = get_translate(message.text)
+        await message.reply(f"📜 **متن ترجمه‌شده:**\n{translation}", reply_markup=inline_buttons)
+        user_states[chat_id] = None  
+
+    elif state == "get_birthdate":
+        response = calculate_age(message.text.strip())
+        await message.reply(response, reply_markup=inline_buttons)
+        user_states[chat_id] = None  
+
     elif state == "ai_chat":
         response = chat_with_ai(message.text)
         await message.reply(response, reply_markup=return_to_main_menu_button)
@@ -246,7 +256,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "calculate_age":
         user_states[chat_id] = "get_birthdate"
-        await callback_query.message.edit_text("لطفاً تاریخ تولد خود را به صورت سال-ماه-روز (YYYY-MM-DD) وارد کنید.")
+        await callback_query.message.edit_text("🎂 لطفاً تاریخ تولد خود را به صورت YYYY-MM-DD وارد کنید:")
 
     elif callback_query.data == "hadith":
         hadith, speaker = get_hadith()
@@ -266,8 +276,8 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "translate":
         user_states[chat_id] = "get_translate"
-        await callback_query.message.edit_text("لطفاً متن مورد نظر خود را ارسال کنید.")
-
+        await callback_query.message.edit_text("📜 لطفاً متنی مورد نظر برای ترجمه به فارسی را ارسال کنید:")
+        
     elif callback_query.data == "random_joke":
         await callback_query.message.edit_text(get_joke(), reply_markup=inline_buttons)
 
