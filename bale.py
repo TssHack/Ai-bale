@@ -256,17 +256,34 @@ def calculate_age(birthdate_text):
     
 # دکمه‌های اینلاین
 inline_buttons = InlineKeyboard(
-    [("اعلام زمان ⏰", "time"), ("حدیث گو 📖", "hadith")],
+    [("📌 بخش کاربردی و ابزاری", "tools")],
+    [("🎯 بخش سرگرمی و علمی", "fun_science")],
+    [("🤖 بخش هوش مصنوعی", "ai_services")],
+    [("ℹ️ درباره ما", "info")]
+)
+
+tools_buttons = InlineKeyboard(
+    [("اعلام زمان ⏰", "time")],
     [("دریافت نرخ طلا و سکه 💰", "gold_rate")],
     [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
+    [("محاسبه سن 🎂", "calculate_age")],
+    [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
+)
+
+fun_science_buttons = InlineKeyboard(
+    [("جوک تصادفی 😂", "random_joke")],
+    [("دانستنی‌ها 🧠", "facts")],
+    [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
+)
+
+ai_services_buttons = InlineKeyboard(
     [("دستیار مومن 🤖", "ai_chat")],
-    [("ترجمه 📝", "translate"), ("جوک تصادفی 😂", "random_joke")],
     [("وکیل ⚖️", "lawyer")],
     [("روانشناس 🧠", "psychologist")],
-    [("محاسبه سن 🎂", "calculate_age")],
-    [("دانستنی‌ها 🧠", "facts")],
-    [("راهنما ❓", "help"), ("اطلاعات سازنده 🧑‍💻", "info")]
+    [("ترجمه 📝", "translate")],
+    [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
+
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
 
 # مدیریت پیام‌ها
@@ -313,6 +330,22 @@ async def handle_message(message):
 @bot.on_callback_query()
 async def on_callback(callback_query):
     chat_id = callback_query.message.chat.id
+
+    async def on_callback(callback_query):
+    chat_id = callback_query.message.chat.id
+
+    if callback_query.data == "tools":
+        await callback_query.message.edit_text("🔧 **بخش کاربردی و ابزاری**", reply_markup=tools_buttons)
+
+    elif callback_query.data == "fun_science":
+        await callback_query.message.edit_text("🎯 **بخش سرگرمی و علمی**", reply_markup=fun_science_buttons)
+
+    elif callback_query.data == "ai_services":
+        await callback_query.message.edit_text("🤖 **بخش هوش مصنوعی**", reply_markup=ai_services_buttons)
+
+    elif callback_query.data == "return_to_main_menu":
+        user_states[chat_id] = None
+        await callback_query.message.edit_text("🏠 **منوی اصلی:**", reply_markup=main_menu_buttons)
 
     if callback_query.data == "time":
         time_info = get_time()
