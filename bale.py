@@ -96,7 +96,7 @@ def chat_with_psychologist(user_message):
         return "مشکلی در ارتباط با سرور روانشناسی رخ داد."
 
 # ترجمه متن
-def translate_to_farsi(text):
+def get_translate(text):
     try:
         response = requests.get(f"https://open.wiki-api.ir/apis-1/GoogleTranslate?text={text}&to=fa")
         data = response.json()
@@ -265,7 +265,7 @@ async def on_callback(callback_query):
         await callback_query.message.edit_text("🤖 پیام خود را برای دستیار مومن ارسال کنید:")
 
     elif callback_query.data == "translate":
-        user_states[chat_id] = "translate"
+        user_states[chat_id] = "get_translate"
         await callback_query.message.edit_text("لطفاً متن مورد نظر خود را ارسال کنید.")
 
     elif callback_query.data == "random_joke":
