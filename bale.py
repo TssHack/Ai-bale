@@ -81,7 +81,7 @@ def chat_with_ai(user_message):
 # تابع چت با وکیل هوش مصنوعی
 def chat_with_lawyer(user_message):
     try:
-        response = requests.get(f"https://vakil-xspt.onrender.com/?text={user_message}")
+        response = requests.get(f"https://vakil-api.liara.run/?text={user_message}")
         data = response.json()
         return data.get("message", "پاسخی از وکیل دریافت نشد.")
     except:
@@ -90,7 +90,7 @@ def chat_with_lawyer(user_message):
 # تابع چت با روانشناس هوش مصنوعی
 def chat_with_psychologist(user_message):
     try:
-        response = requests.get(f"https://ravan-ehsan.onrender.com/?text={user_message}")
+        response = requests.get(f"https://ravan-api.liara.run/?text={user_message}")
         data = response.json()
         return data.get("message", "پاسخی از روانشناس دریافت نشد.")
     except:
