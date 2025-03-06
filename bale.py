@@ -286,6 +286,12 @@ return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی
 @bot.on_message()
 async def handle_message(message):
     chat_id = message.chat.id
+
+    # بررسی وجود from_user
+    if not hasattr(message, "from_user") or message.from_user is None:
+        await message.reply("❌ خطا: این پیام فرستنده‌ی مشخصی ندارد.")
+        return
+
     user_id = message.from_user.id
     state = user_states.get(chat_id)
 
