@@ -55,7 +55,7 @@ def get_time():
 # تابع دریافت حدیث
 def get_hadith():
     try:
-        response = requests.get("https://din-esi.onrender.com/random_hadith")
+        response = requests.get("https://hadis-api.liara.run/random_hadith")
         data = response.json()
         return data.get("hadith", "حدیثی پیدا نشد."), data.get("speaker", "نام سخنران پیدا نشد.")
     except:
