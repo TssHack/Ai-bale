@@ -12,17 +12,6 @@ import pytz
 bot_token = "‏‏1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
 bot = Client(bot_token)
 
-channel_username = "@shafag_tm"  # نام کاربری کانال خود را جایگزین کنید
-
-# تابع بررسی عضویت کاربر در کانال
-def is_user_joined(user_id):
-    url = f"https://api.bale.ai/bot{bot_token}/getChatMember?chat_id={channel_username}&user_id={user_id}"
-    response = requests.get(url)
-    if response.status_code != 200:
-        return False
-    
-    data = response.json()
-    return data.get("ok", False) and data["result"]["status"] in ["member", "administrator", "creator"]
 # دیکشنری ذخیره وضعیت کاربران
 user_states = {}
 
@@ -280,28 +269,12 @@ inline_buttons = InlineKeyboard(
 )
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
 
-
-
 # مدیریت پیام‌ها
 @bot.on_message()
 async def handle_message(message):
     chat_id = message.chat.id
-
-    # بررسی وجود from_user
-    if not hasattr(message, "from_user") or message.from_user is None:
-        await message.reply("❌ خطا: این پیام فرستنده‌ی مشخصی ندارد.")
-        return
-
-    user_id = message.from_user.id
     state = user_states.get(chat_id)
 
-    if not is_user_joined(user_id):
-        await message.reply(
-            "لطفاً ابتدا در کانال زیر عضو شوید:",
-            reply_markup=InlineKeyboard([("🔗 عضویت در کانال", f"https://t.me/{channel_username[1:]}")])
-        )
-        return
-        
     if state is None:
         await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
 
@@ -356,13 +329,6 @@ async def on_callback(callback_query):
 """,
             reply_markup=inline_buttons
         )
-
-    if not is_user_joined(user_id):
-        await callback_query.message.edit_text(
-            "برای استفاده از ربات لطفاً ابتدا در کانال زیر عضو شوید ⬇️",
-            reply_markup=join_button
-        )
-        return
 
     elif callback_query.data == "calculate_age":
         user_states[chat_id] = "get_birthdate"
