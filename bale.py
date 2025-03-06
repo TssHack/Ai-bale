@@ -26,23 +26,17 @@ def get_today_event(jalali_date):
     date_key = f"{jalali_date.month:02}/{jalali_date.day:02}"
     return events.get(date_key, "مناسبتی ثبت نشده است")
 
-# تابع دریافت تاریخ و زمان به وقت ایران
 def get_time():
     iran_tz = pytz.timezone('Asia/Tehran')
     now = datetime.now(iran_tz)
-    
-    # تاریخ شمسی
-    jalali_date = jdatetime.date.fromgregorian(date=now)
 
-    # تاریخ قمری
-    hijri_date = convert.Gregorian(now.year, now.month, now.day).to_hijri()
-    hijri_date_str = f"{hijri_date.day:02}/{hijri_date.month:02}/{hijri_date.year}"
+    jalali_date = jdatetime.date.fromgregorian(year=now.year, month=now.month, day=now.day)
+    hijri_date = islamic.from_gregorian(now.year, now.month, now.day)
+    hijri_date_str = f"{hijri_date[2]:02}/{hijri_date[1]:02}/{hijri_date[0]}"
 
-    # روزهای باقی‌مانده تا عید نوروز
     eid_date = jdatetime.date(jalali_date.year + 1, 1, 1)
     remaining_days = (eid_date - jalali_date).days
 
-    # مناسبت روز
     today_event = get_today_event(jalali_date)
 
     return {
