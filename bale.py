@@ -316,7 +316,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "calculate_age":
         user_states[chat_id] = "get_birthdate"
-        await callback_query.message.edit_text("🎂 لطفاً تاریخ تولد خود را به صورت YYYY-MM-DD وارد کنید:")
+        await callback_query.message.edit_text("🎂 لطفاً تاریخ تولد خود را به صورت فرمت YYYY/MM/DD (سال-ماه-روز) وارد کنید. برای مثال: 1374/2/4")
 
     elif callback_query.data == "hadith":
         hadith, speaker = get_hadith()
