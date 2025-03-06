@@ -12,7 +12,7 @@ import pytz
 bot_token = "‏‏1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
 bot = Client(bot_token)
 
-channel_username = "@your_channel"  # نام کاربری کانال خود را جایگزین کنید
+channel_username = "@shafag_tm"  # نام کاربری کانال خود را جایگزین کنید
 
 # تابع بررسی عضویت کاربر در کانال
 def is_user_joined(user_id):
