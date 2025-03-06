@@ -91,6 +91,15 @@ def chat_with_psychologist(user_message):
     except:
         return "مشکلی در ارتباط با سرور روانشناسی رخ داد."
 
+# ترجمه متن
+def translate_to_farsi(text):
+    try:
+        response = requests.get(f"https://open.wiki-api.ir/apis-1/GoogleTranslate?text={text}&to=fa")
+        data = response.json()
+        return data.get("results", "ترجمه‌ای پیدا نشد.")
+    except:
+        return "مشکلی در ترجمه رخ داد."
+
 # تابع پیگیری مرسوله تیپاکس
 def track_parcel(tracking_code):
     try:
@@ -108,16 +117,41 @@ def track_parcel(tracking_code):
     except:
         return "مشکلی در دریافت اطلاعات مرسوله رخ داد."
 
+def get_joke():
+    try:
+        response = requests.get("https://open.wiki-api.ir/apis-1/4Jok?page=500")
+        data = response.json()
+        return f"😂 {data['results']['post']}"
+    except:
+        return "مشکلی در دریافت جوک رخ داد."
+
+# دریافت نرخ طلا و سکه
+def get_gold_rate():
+    try:
+        response = requests.get("https://open.wiki-api.ir/apis-1/GoldRate")
+        data = response.json()
+        prices = data["results"]["prices"]
+        text = "💰 نرخ طلا و سکه:\n\n"
+        for item in prices:
+            change = "🔺" if item["is_positive"] else "🔻"
+            text += f"{item['name']}: {item['price']} ریال ({change} {item['change_value']})\n"
+        return text
+    except:
+        return "مشکلی در دریافت نرخ طلا و سکه رخ داد."
+
 # دکمه‌های اینلاین
 inline_buttons = InlineKeyboard(
     [("اعلام زمان ⏰", "time"), ("حدیث گو 📖", "hadith")],
+    [("دریافت نرخ طلا و سکه 💰", "gold_rate")],
     [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
     [("دستیار مومن 🤖", "ai_chat")],
+    [("ترجمه 📝", "translate"), ("جوک رندوم 😂", "random_joke")],
     [("وکیل ⚖️", "lawyer")],
     [("روانشناس 🧠", "psychologist")],
+    [("محاسبه سن 🎂", "calculate_age")],
+    [("دانستنی‌ها 🧠", "facts")],
     [("راهنما ❓", "help"), ("اطلاعات سازنده 🧑‍💻", "info")]
 )
-
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
 
 # مدیریت پیام‌ها
@@ -182,6 +216,16 @@ async def on_callback(callback_query):
     elif callback_query.data == "ai_chat":
         user_states[chat_id] = "ai_chat"
         await callback_query.message.edit_text("🤖 پیام خود را برای دستیار مومن ارسال کنید:")
+
+    elif callback_query.data == "translate":
+        user_states[chat_id] = "translate"
+        await callback_query.message.edit_text("لطفاً متن مورد نظر خود را ارسال کنید.")
+
+    elif callback_query.data == "joke":
+        await callback_query.message.edit_text(get_joke(), reply_markup=inline_buttons)
+
+    elif callback_query.data == "gold_rate":
+        await callback_query.message.edit_text(get_gold_rate(), reply_markup=inline_buttons)
 
     elif callback_query.data == "lawyer":
         user_states[chat_id] = "lawyer"
