@@ -268,7 +268,7 @@ async def on_callback(callback_query):
         user_states[chat_id] = "translate"
         await callback_query.message.edit_text("لطفاً متن مورد نظر خود را ارسال کنید.")
 
-    elif callback_query.data == "joke":
+    elif callback_query.data == "random_joke":
         await callback_query.message.edit_text(get_joke(), reply_markup=inline_buttons)
 
     elif callback_query.data == "gold_rate":
