@@ -143,31 +143,44 @@ def get_gold_rate():
     except:
         return "مشکلی در دریافت نرخ طلا و سکه رخ داد."
 
-def calculate_age(birthdate):
+def calculate_age(birthdate_text):
+    try:
+        # تبدیل تاریخ شمسی به میلادی
+        birthdate_jalali = jdatetime.datetime.strptime(birthdate_text, "%Y/%m/%d")
+        birthdate = birthdate_jalali.togregorian()  # تبدیل به میلادی
+    except ValueError:
+        return "⚠ فرمت تاریخ اشتباه است. لطفاً به صورت YYYY/MM/DD شمسی وارد کنید."
+
+    # محاسبه سن
     today = datetime.today()
     age = today.year - birthdate.year
     if today.month < birthdate.month or (today.month == birthdate.month and today.day < birthdate.day):
         age -= 1
 
+    # تبدیل تاریخ تولد به شمسی
     birthdate_jalali = jdatetime.date.fromgregorian(date=birthdate)
-    days_since_birthday = (today - birthdate).days
-    next_birthday = datetime(today.year + 1, birthdate.month, birthdate.day)
-    if today > next_birthday:
-        next_birthday = datetime(today.year + 2, birthdate.month, birthdate.day)
-    
-    days_until_next_birthday = (next_birthday - today).days
-    birth_weekday = birthdate.strftime("%A")
-    birth_date_str = birthdate_jalali.strftime("%Y%m%d")
-    birth_number = sum(int(digit) for digit in birth_date_str)
 
-    result = f"""
+    # محاسبه تعداد روزهای گذشته و تا تولد بعدی
+    days_since_birth = (today - birthdate).days
+    next_birthday = datetime(today.year, birthdate.month, birthdate.day)
+    if today > next_birthday:
+        next_birthday = datetime(today.year + 1, birthdate.month, birthdate.day)
+    days_until_next_birthday = (next_birthday - today).days
+
+    # روز هفته تولد
+    birth_weekday = birthdate.strftime('%A')  # نام روز هفته به انگلیسی
+
+    # محاسبه عدد شمع تولد
+    birth_number = sum([int(digit) for digit in str(birthdate.year)])
+
+    return f"""
 🌟 **اطلاعات سن شما** 🌟
 
 📅 **تاریخ تولد:** {birthdate.strftime('%Y-%m-%d')} (میلادی)
 📆 **تاریخ تولد (شمسی):** {birthdate_jalali.strftime('%Y/%m/%d')} (شمسی)
 
 🎂 **سن شما:** {age} سال
-🗓️ **تعداد روزهای گذشته از تولد شما:** {days_since_birthday} روز
+🗓️ **تعداد روزهای گذشته از تولد شما:** {days_since_birth} روز
 🔮 **تعداد روزهای باقی‌مانده تا تولد بعدی شما:** {days_until_next_birthday} روز
 
 📅 **روز هفته تولد شما:** {birth_weekday}
