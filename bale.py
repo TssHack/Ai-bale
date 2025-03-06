@@ -1,5 +1,5 @@
 import json
-import convertdate
+from convertdate import islamic
 from balethon import Client
 from balethon.objects import InlineKeyboard, ReplyKeyboard
 import requests
