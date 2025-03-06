@@ -109,33 +109,50 @@ def get_translate(text):
 def track_parcel(tracking_code):
     try:
         response = requests.get(f"https://open.wiki-api.ir/apis-1/TipaxInfo?code={tracking_code}")
+        
+        # بررسی وضعیت پاسخ HTTP
+        if response.status_code != 200:
+            return "❌ خطا در اتصال به سرور."
+        
         data = response.json()
-        if data["status"]:
-            results = data["results"]
-        sender = results["sender"]
-        receiver = results["receiver"]
-        status_info = results["status_info"]
+
+        # بررسی اینکه آیا اطلاعات معتبر برگشت داده شده است
+        if not data.get("status", False):
+            return "🔮اطلاعات مرسوله پیدا نشد."
         
+        results = data.get("results", {})
+        if not results:
+            return "🔮اطلاعات مرسوله پیدا نشد."
+
+        sender = results.get("sender", {})
+        receiver = results.get("receiver", {})
+        status_info = results.get("status_info", [])
+
         # ساخت پیام کامل با اطلاعات بیشتر
-        parcel_info = f"📤فرستنده: {sender['name']} از {sender['city']}\n"
-        parcel_info += f"🏢تعداد ارسال‌ها: {results['dispatch_count']}\n"
-        parcel_info += f"💰هزینه پست: {results['package_cost']} تومان\n"
-        parcel_info += f"📦نوع بسته: {results['COD']}\n"
-        parcel_info += f"🚚وزن: {results['weight']} کیلوگرم\n"
-        parcel_info += f"💸هزینه کل: {results['total_cost']} تومان\n"
-        parcel_info += f"🔄وضعیت پرداخت: {results['pay_type']}\n"
-        parcel_info += f"🌍مسافت: {results['city_distance']} کیلومتر\n"
-        parcel_info += f"📍زون: {results['distance_zone']}\n"
+        parcel_info = f"📤فرستنده: {sender.get('name', 'نامشخص')} از {sender.get('city', 'نامشخص')}\n"
+        parcel_info += f"🏢تعداد ارسال‌ها: {results.get('dispatch_count', 'نامشخص')}\n"
+        parcel_info += f"💰هزینه پست: {results.get('package_cost', 'نامشخص')} تومان\n"
+        parcel_info += f"📦نوع بسته: {results.get('COD', 'نامشخص')}\n"
+        parcel_info += f"🚚وزن: {results.get('weight', 'نامشخص')} کیلوگرم\n"
+        parcel_info += f"💸هزینه کل: {results.get('total_cost', 'نامشخص')} تومان\n"
+        parcel_info += f"🔄وضعیت پرداخت: {results.get('pay_type', 'نامشخص')}\n"
+        parcel_info += f"🌍مسافت: {results.get('city_distance', 'نامشخص')} کیلومتر\n"
+        parcel_info += f"📍زون: {results.get('distance_zone', 'نامشخص')}\n"
         
-        parcel_info += f"\n📥گیرنده: {receiver['name']} در {receiver['city']}\n"
+        parcel_info += f"\n📥گیرنده: {receiver.get('name', 'نامشخص')} در {receiver.get('city', 'نامشخص')}\n"
         
-        for status in status_info:
-            parcel_info += f"\n📝تاریخ: {status['date']}\n"
-            parcel_info += f"🔹وضعیت: {status['status']}\n"
-            parcel_info += f"📍محل: {status['representation']}\n"
-        
+        if status_info:
+            for status in status_info:
+                parcel_info += f"\n📝تاریخ: {status.get('date', 'نامشخص')}\n"
+                parcel_info += f"🔹وضعیت: {status.get('status', 'نامشخص')}\n"
+                parcel_info += f"📍محل: {status.get('representation', 'نامشخص')}\n"
+        else:
+            parcel_info += "\n🔮وضعیت مرسوله موجود نیست."
+
         return parcel_info
-    return "🔮اطلاعات مرسوله پیدا نشد."
+
+    except Exception as e:
+        return f"❌ خطا: {str(e)}"
 
 def get_joke():
     try:
