@@ -331,9 +331,6 @@ async def handle_message(message):
 async def on_callback(callback_query):
     chat_id = callback_query.message.chat.id
 
-    async def on_callback(callback_query):
-    chat_id = callback_query.message.chat.id
-
     if callback_query.data == "tools":
         await callback_query.message.edit_text("🔧 **بخش کاربردی و ابزاری**", reply_markup=tools_buttons)
 
