@@ -13,6 +13,18 @@ bot = Client(bot_token)
 user_states = {}
 
 # تابع دریافت تاریخ و زمان به وقت ایران
+def load_events(year):
+    try:
+        with open(f"events_{year}.json", "r", encoding="utf-8") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+
+def get_today_event(jalali_date):
+    events = load_events(jalali_date.year)  # Use the current Jalali year for loading events
+    date_key = f"{jalali_date.month:02}/{jalali_date.day:02}"
+    return events.get(date_key, "مناسبتی ثبت نشده است")
+
 def get_time():
     iran_tz = pytz.timezone('Asia/Tehran')
     now = datetime.now(iran_tz)
@@ -27,6 +39,9 @@ def get_time():
     # روزهای باقی‌مانده تا عید نوروز
     eid_date = jdatetime.date(jalali_date.year + 1, 1, 1)
     remaining_days = (eid_date - jalali_date).days
+    
+    # مناسبت روز
+    today_event = get_today_event(jalali_date)
 
     return {
         "shamsi_date": jalali_date.strftime("%Y/%m/%d"),
@@ -36,7 +51,8 @@ def get_time():
         "day": jalali_date.strftime("%A"),
         "month": jalali_date.strftime("%B"),
         "year": jalali_date.year,
-        "remaining_days": remaining_days
+        "remaining_days": remaining_days,
+        "event": today_event
     }
 
 # تابع دریافت حدیث
@@ -150,6 +166,7 @@ async def on_callback(callback_query):
 📅 **روز:** {time_info['day']}
 🍂 **ماه شمسی:** {time_info['month']}
 🎯 **روزهای باقی‌مانده تا عید نوروز:** {time_info['remaining_days']} روز
+✨ **مناسبت روز:** {time_info['event']}
 """,
             reply_markup=inline_buttons
         )
