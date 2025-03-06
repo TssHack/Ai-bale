@@ -342,7 +342,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "return_to_main_menu":
         user_states[chat_id] = None
-        await callback_query.message.edit_text("🏠 **منوی اصلی:**", reply_markup=main_menu_buttons)
+        await callback_query.message.edit_text("🏠 **منوی اصلی:**", reply_markup=inline_buttons)
 
     if callback_query.data == "time":
         time_info = get_time()
