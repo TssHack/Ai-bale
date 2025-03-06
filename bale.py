@@ -112,15 +112,30 @@ def track_parcel(tracking_code):
         data = response.json()
         if data["status"]:
             results = data["results"]
-            return f"""📦 **پیگیری مرسوله تیپاکس**
-            
-📤 **فرستنده:** {results['sender']['name']} از {results['sender']['city']}
-📥 **گیرنده:** {results['receiver']['name']} در {results['receiver']['city']}
-🚚 **وضعیت مرسوله:** {', '.join([f"{status['date']} - {status['status']}" for status in results['status_info']])}
-"""
-        return "❌ اطلاعات مرسوله پیدا نشد. لطفاً کد را بررسی کنید."
-    except:
-        return "مشکلی در دریافت اطلاعات مرسوله رخ داد."
+        sender = results["sender"]
+        receiver = results["receiver"]
+        status_info = results["status_info"]
+        
+        # ساخت پیام کامل با اطلاعات بیشتر
+        parcel_info = f"📤فرستنده: {sender['name']} از {sender['city']}\n"
+        parcel_info += f"🏢تعداد ارسال‌ها: {results['dispatch_count']}\n"
+        parcel_info += f"💰هزینه پست: {results['package_cost']} تومان\n"
+        parcel_info += f"📦نوع بسته: {results['COD']}\n"
+        parcel_info += f"🚚وزن: {results['weight']} کیلوگرم\n"
+        parcel_info += f"💸هزینه کل: {results['total_cost']} تومان\n"
+        parcel_info += f"🔄وضعیت پرداخت: {results['pay_type']}\n"
+        parcel_info += f"🌍مسافت: {results['city_distance']} کیلومتر\n"
+        parcel_info += f"📍زون: {results['distance_zone']}\n"
+        
+        parcel_info += f"\n📥گیرنده: {receiver['name']} در {receiver['city']}\n"
+        
+        for status in status_info:
+            parcel_info += f"\n📝تاریخ: {status['date']}\n"
+            parcel_info += f"🔹وضعیت: {status['status']}\n"
+            parcel_info += f"📍محل: {status['representation']}\n"
+        
+        return parcel_info
+    return "🔮اطلاعات مرسوله پیدا نشد."
 
 def get_joke():
     try:
