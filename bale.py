@@ -72,7 +72,7 @@ def get_fact():
 # تابع چت با هوش مصنوعی اسلامی
 def chat_with_ai(user_message):
     try:
-        response = requests.get(f"https://momen-api.onrender.com/?text={user_message}")
+        response = requests.get(f"https://momen-ai.liara.run/?text={user_message}")
         data = response.json()
         return data.get("message", "پاسخی از دستیار مومن دریافت نشد.")
     except:
