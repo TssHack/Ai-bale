@@ -139,6 +139,41 @@ def get_gold_rate():
     except:
         return "مشکلی در دریافت نرخ طلا و سکه رخ داد."
 
+def calculate_age(birthdate):
+    today = datetime.today()
+    age = today.year - birthdate.year
+    if today.month < birthdate.month or (today.month == birthdate.month and today.day < birthdate.day):
+        age -= 1
+
+    birthdate_jalali = jdatetime.date.fromgregorian(date=birthdate)
+    days_since_birthday = (today - birthdate).days
+    next_birthday = datetime(today.year + 1, birthdate.month, birthdate.day)
+    if today > next_birthday:
+        next_birthday = datetime(today.year + 2, birthdate.month, birthdate.day)
+    
+    days_until_next_birthday = (next_birthday - today).days
+    birth_weekday = birthdate.strftime("%A")
+    birth_date_str = birthdate_jalali.strftime("%Y%m%d")
+    birth_number = sum(int(digit) for digit in birth_date_str)
+
+    result = f"""
+🌟 **اطلاعات سن شما** 🌟
+
+📅 **تاریخ تولد:** {birthdate.strftime('%Y-%m-%d')} (میلادی)
+📆 **تاریخ تولد (شمسی):** {birthdate_jalali.strftime('%Y/%m/%d')} (شمسی)
+
+🎂 **سن شما:** {age} سال
+🗓️ **تعداد روزهای گذشته از تولد شما:** {days_since_birthday} روز
+🔮 **تعداد روزهای باقی‌مانده تا تولد بعدی شما:** {days_until_next_birthday} روز
+
+📅 **روز هفته تولد شما:** {birth_weekday}
+
+🕰️ **تاریخ امروز:** {today.strftime('%Y-%m-%d')} (میلادی)
+
+🔢 **عدد شمع تولد شما:** {birth_number}
+"""
+    return result
+
 # دکمه‌های اینلاین
 inline_buttons = InlineKeyboard(
     [("اعلام زمان ⏰", "time"), ("حدیث گو 📖", "hadith")],
@@ -204,6 +239,10 @@ async def on_callback(callback_query):
 """,
             reply_markup=inline_buttons
         )
+
+    elif callback_query.data == "calculate_age":
+        user_states[chat_id] = "get_birthdate"
+        await callback_query.message.edit_text("لطفاً تاریخ تولد خود را به صورت سال-ماه-روز (YYYY-MM-DD) وارد کنید.")
 
     elif callback_query.data == "hadith":
         hadith, speaker = get_hadith()
