@@ -16,15 +16,27 @@ user_states = {}
 def get_time():
     iran_tz = pytz.timezone('Asia/Tehran')
     now = datetime.now(iran_tz)
+    
+    # تاریخ شمسی
     jalali_date = jdatetime.date.fromgregorian(date=now)
+    
+    # تاریخ قمری
+    hijri_date = islamic.from_gregorian(now.year, now.month, now.day)
+    hijri_date_str = f"{hijri_date[2]:02}/{hijri_date[1]:02}/{hijri_date[0]}"
+    
+    # روزهای باقی‌مانده تا عید نوروز
+    eid_date = jdatetime.date(jalali_date.year + 1, 1, 1)
+    remaining_days = (eid_date - jalali_date).days
+
     return {
         "shamsi_date": jalali_date.strftime("%Y/%m/%d"),
         "gregorian_date": now.strftime("%Y-%m-%d"),
-        "hijri_date": now.strftime("%d/%m/%Y"),
+        "hijri_date": hijri_date_str,
         "time": now.strftime("%H:%M:%S"),
         "day": jalali_date.strftime("%A"),
         "month": jalali_date.strftime("%B"),
-        "year": jalali_date.year
+        "year": jalali_date.year,
+        "remaining_days": remaining_days
     }
 
 # تابع دریافت حدیث
@@ -130,10 +142,14 @@ async def on_callback(callback_query):
     if callback_query.data == "time":
         time_info = get_time()
         await callback_query.message.edit_text(
-            f"""🕰 **زمان دقیق:** {time_info['time']}
+            f"""
+🕰 **زمان دقیق:** {time_info['time']}
 📆 **تاریخ شمسی:** {time_info['shamsi_date']}
 🌍 **تاریخ میلادی:** {time_info['gregorian_date']}
 🌙 **تاریخ قمری:** {time_info['hijri_date']}
+📅 **روز:** {time_info['day']}
+🍂 **ماه شمسی:** {time_info['month']}
+🎯 **روزهای باقی‌مانده تا عید نوروز:** {time_info['remaining_days']} روز
 """,
             reply_markup=inline_buttons
         )
