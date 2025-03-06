@@ -285,6 +285,7 @@ ai_services_buttons = InlineKeyboard(
 )
 
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
+Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 # مدیریت پیام‌ها
 @bot.on_message()
@@ -298,30 +299,30 @@ async def handle_message(message):
     elif state == "tracking":
         tracking_code = message.text.strip()
         response = track_parcel(tracking_code)
-        await message.reply(response, reply_markup=inline_buttons)
+        await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None  
 
     elif state == "get_translate":
         translation = get_translate(message.text)
-        await message.reply(f"📜 **متن ترجمه‌شده:**\n{translation}", reply_markup=inline_buttons)
+        await message.reply(f"📜 **متن ترجمه‌شده:**\n{translation}", reply_markup=ai_services_buttons)
         user_states[chat_id] = None  
 
     elif state == "get_birthdate":
         response = calculate_age(message.text.strip())
-        await message.reply(response, reply_markup=inline_buttons)
+        await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None  
 
     elif state == "ai_chat":
         response = chat_with_ai(message.text)
-        await message.reply(response, reply_markup=return_to_main_menu_button)
+        await message.reply(response, reply_markup=Ai_back)
 
     elif state == "lawyer":
         response = chat_with_lawyer(message.text)
-        await message.reply(response, reply_markup=return_to_main_menu_button)
+        await message.reply(response, reply_markup=Ai_back)
 
     elif state == "psychologist":
         response = chat_with_psychologist(message.text)
-        await message.reply(response, reply_markup=return_to_main_menu_button)
+        await message.reply(response, reply_markup=Ai_back)
 
     if state not in ["ai_chat", "lawyer", "psychologist"]:
         user_states[chat_id] = None  
@@ -357,7 +358,7 @@ async def on_callback(callback_query):
 🎯 **روزهای باقی‌مانده تا عید نوروز:** {time_info['remaining_days']} روز
 ✨ **مناسبت روز:** {time_info['event']}
 """,
-            reply_markup=inline_buttons
+            reply_markup=tools_buttons
         )
 
     elif callback_query.data == "calculate_age":
@@ -366,11 +367,11 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "hadith":
         hadith, speaker = get_hadith()
-        await callback_query.message.edit_text(f"📖 **حدیث:**\n{hadith}\n🗣️ **{speaker}**", reply_markup=inline_buttons)
+        await callback_query.message.edit_text(f"📖 **حدیث:**\n{hadith}\n🗣️ **{speaker}**", reply_markup=tools_buttons)
 
     elif callback_query.data == "facts":
         fact, source = get_fact()
-        await callback_query.message.edit_text(f"📌 **فکت:**\n{fact}\n✏️ **{source}**", reply_markup=inline_buttons)
+        await callback_query.message.edit_text(f"📌 **فکت:**\n{fact}\n✏️ **{source}**", reply_markup=fun_science_buttons)
 
     elif callback_query.data == "track_parcel":
         user_states[chat_id] = "tracking"
@@ -385,10 +386,10 @@ async def on_callback(callback_query):
         await callback_query.message.edit_text("📜 لطفاً متنی مورد نظر برای ترجمه به فارسی را ارسال کنید:")
         
     elif callback_query.data == "random_joke":
-        await callback_query.message.edit_text(get_joke(), reply_markup=inline_buttons)
+        await callback_query.message.edit_text(get_joke(), reply_markup=fun_science_buttons)
 
     elif callback_query.data == "gold_rate":
-        await callback_query.message.edit_text(get_gold_rate(), reply_markup=inline_buttons)
+        await callback_query.message.edit_text(get_gold_rate(), reply_markup=tools_buttons)
 
     elif callback_query.data == "lawyer":
         user_states[chat_id] = "lawyer"
@@ -408,5 +409,8 @@ async def on_callback(callback_query):
         user_states[chat_id] = None
         await callback_query.message.edit_text("🏠 بازگشت به منوی اصلی:", reply_markup=inline_buttons)
 
+    elif callback_query.data == "Ai_b":
+        user_states[chat_id] = None
+        await callback_query.message.edit_text(“انتخاب کنید : ", reply_markup= ai_services_buttons)
 # اجرای ربات
 bot.run()
