@@ -411,6 +411,6 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "Ai_b":
         user_states[chat_id] = None
-        await callback_query.message.edit_text(“انتخاب کنید : ", reply_markup= ai_services_buttons)
+        await callback_query.message.edit_text(“👀🔎", reply_markup= ai_services_buttons)
 # اجرای ربات
 bot.run()
