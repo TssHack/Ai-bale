@@ -86,6 +86,45 @@ def get_hadith():
     except:
         return "مشکلی در دریافت حدیث رخ داد.", "نامشخص"
 
+import requests
+
+def aparat(query):
+    try:
+        url = f"https://open.wiki-api.ir/apis-1/AparatSearch?q={query}"
+        response = requests.get(url, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data.get("status", False):
+                videos = data.get("results", [])
+                
+                if videos:
+                    result = "🎥 نتایج جستجو در آپارات:\n\n"
+                    for video in videos[:5]:  # نمایش 5 نتیجه اول
+                        title = video.get("title", "بدون عنوان")
+                        link = video.get("frame", "#")
+                        poster = video.get("small_poster", "")
+                        visits = video.get("visit_cnt", 0)
+
+                        result += (f"📌 عنوان: {title}\n"
+                                   f"👁️ بازدید: {visits}\n"
+                                   f"🔗 [مشاهده ویدیو]({link})\n\n")
+                    return result
+                else:
+                    return "😔 هیچ ویدیویی مرتبط پیدا نشد."
+            else:
+                return "⚠️ مشکلی در دریافت اطلاعات از API وجود دارد."
+        else:
+            return f"❌ خطای HTTP: {response.status_code}"
+    
+    except requests.exceptions.Timeout:
+        return "⏳ زمان انتظار به پایان رسید. لطفاً دوباره تلاش کنید."
+    except requests.exceptions.RequestException as e:
+        return f"❌ خطا در اتصال به سرور: {e}"
+    except Exception:
+        return "🚫 مشکلی رخ داده است. لطفاً دوباره تلاش کنید."
+
 #mobile
 
 def mobile(mo):
@@ -438,6 +477,7 @@ tools_buttons = InlineKeyboard(
     [("بازی های امروز ⚽️", "fo")],
     [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
     [("جستجوی گوشی 📱", "mobi")],
+    [("جستجو در آپارات 🎥", "apa")],
     [("محاسبه سن 🎂", "calculate_age")],
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
@@ -485,6 +525,12 @@ async def handle_message(message):
     elif state == "s-m":
         mo = message.text.strip()
         response = mobile(mo)
+        await message.reply(response, reply_markup=tools_buttons)
+        user_states[chat_id] = None
+
+    elif state == "s-a":
+        query = message.text.strip()
+        response = aparat(query)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None
 
@@ -619,6 +665,10 @@ async def on_callback(callback_query):
     elif callback_query.data == "mobi":
         user_states[chat_id] = "s-m"
         await callback_query.message.edit_text("**🔎📱 لطفا نام موبایل مورد نظر خود را ارسال کنید:**")
+
+    elif callback_query.data == "apa":
+        user_states[chat_id] = "s-a"
+        await callback_query.message.edit_text("**🔎🎥 موضوع مورد نظر برای جستجو را ارسال کنید:**")
 
     elif callback_query.data == "p":
         user_states[chat_id] = "photo-ai"
