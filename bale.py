@@ -750,8 +750,8 @@ async def on_callback(callback_query):
         await callback_query.message.edit_text("🧑‍💻 این ربات با افتخار توسط **احسان فضلی** و تیم **شفق** توسعه یافته است.\n\n🔹 ارائه‌دهنده خدمات هوش مصنوعی و ابزارهای کاربردی اسلامی 🔹", reply_markup=inline_buttons)
 
     elif callback_query.data == "return_to_main_menu":
-        user_states[chat_id] = None
-        await callback_query.message‌.edit_text("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
+         user_states[chat_id] = None
+         await callback_query.message.edit_text("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
 
     elif callback_query.data == "w_i":
         user_states[chat_id] = "get_weather"
