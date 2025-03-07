@@ -86,6 +86,61 @@ def get_hadith():
     except:
         return "مشکلی در دریافت حدیث رخ داد.", "نامشخص"
 
+#mobile
+def mobile(mo):
+    try:
+        # ارسال درخواست به API برای جستجوی موبایل
+        url = f"https://open.wiki-api.ir/apis-1/MobileSearch?q={mo}"
+        response = requests.get(url, timeout=10)
+        
+        # بررسی وضعیت پاسخ HTTP
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data.get('status', False):
+                mobiles = data['results']
+                if mobiles:
+                    result = "📱 نتایج جستجو برای شما:\n\n"
+                    for mobile in mobiles:
+                        result += f"🔍 نام: {mobile['name']}\n"
+                        result += f"🖼️ تصویر: {mobile['image']}\n"
+                        result += f"🔗 لینک: [مشاهده مشخصات]({mobile['url']})\n\n"
+                    return result
+                else:
+                    return "😔 هیچ گوشی مرتبطی پیدا نشد."
+            else:
+                return "⚠️ خطا در ارتباط با API. لطفاً دوباره تلاش کنید."
+        else:
+            return "😓 مشکلی در دریافت داده‌ها پیش آمده است. لطفاً دوباره تلاش کنید."
+    
+    except Exception as e:
+        return "❌ خطا در اتصال به سرویس. لطفاً دوباره تلاش کنید."
+        
+#photo
+def photo(query):
+    try:
+        # ارسال درخواست به API برای ساخت تصویر
+        url = f"https://open.wiki-api.ir/apis-1/MakePhotoAi?q={query}"
+        response = requests.get(url, timeout=10)
+        
+        # بررسی وضعیت پاسخ HTTP
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data.get('status', False):
+                image_url = data['results'].get('img', '')
+                if image_url:
+                    return f"🎉 تصویر شما با موفقیت ساخته شد! 🎨 برای مشاهده آن روی لینک زیر کلیک کنید: [مشاهده تصویر]({image_url}) 😍"
+                else:
+                    return "😔 متاسفانه نتواستیم تصویر مورد نظر را بسازیم. لطفاً دوباره تلاش کنید."
+            else:
+                return "⚠️ خطا در ارتباط با API. لطفاً دوباره تلاش کنید."
+        else:
+            return "😓 مشکلی در دریافت داده‌ها پیش آمده است. لطفاً دوباره تلاش کنید."
+    
+    except Exception as e:
+        return "❌ خطا در اتصال به سرویس. لطفاً دوباره تلاش کنید."
+
 def get_fact():
     try:
         response = requests.get("https://fact-api.onrender.com/f")
@@ -140,9 +195,17 @@ def chat_with_ai(user_message):
     try:
         response = requests.get(f"https://momen-ai.liara.run/?text={user_message}")
         data = response.json()
-        return data.get("message", "پاسخی از دستیار مومن دریافت نشد.")
+        return data.get("results", "پاسخی از دستیار مومن دریافت نشد.")
     except:
         return "مشکلی در ارتباط با سرور هوش مصنوعی رخ داد."
+#gpt
+def get_gpt(user_message):
+    try:
+        response = requests.get(f"https://open.wiki-api.ir/apis-1/ChatGPT-4o?q={user_message}")
+        data = response.json()
+        return data.get("message", "پاسخی از ChatGPT مومن دریافت نشد.")
+    except:
+        return "مشکلی در ارتباط با سرور ChatGPT رخ داد."
 
 # تابع چت با وکیل هوش مصنوعی
 def chat_with_lawyer(user_message):
@@ -368,6 +431,7 @@ tools_buttons = InlineKeyboard(
     [("وضعیت آب و هوا‌ ⛅️", "w_i")],
     [("بازی های امروز ⚽️", "fo")],
     [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
+    [("جستجوی گوشی 📱", "mobi")],
     [("محاسبه سن 🎂", "calculate_age")],
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
@@ -382,7 +446,9 @@ ai_services_buttons = InlineKeyboard(
     [("دستیار مومن 🤖", "ai_chat")],
     [("وکیل ⚖️", "lawyer")],
     [("روانشناس 🧠", "psychologist")],
-    [("ترجمه 📝", "translate")],
+    [("ChatGPT-4o 🧩", "gpt")],
+    [("تولید تصویر 🤳", "p")],
+    [("مترجم انگلیسی 📝", "translate")],
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
 
@@ -410,6 +476,18 @@ async def handle_message(message):
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None  
 
+    elif state == "s_m":
+        mo = message.text.strip()
+        response = mobile(mo)
+        await message.reply(response, reply_markup=tools_buttons)
+        user_states[chat_id] = None
+
+    elif state == "photo-ai":
+        query = message.text.strip()
+        response = photo(query)
+        await message.reply(response, reply_markup=Ai_back)
+        user_states[chat_id] = None  
+
     elif state == "get_translate":
         translation = get_translate(message.text)
         await message.reply(f"📜 **متن ترجمه‌شده:**\n{translation}", reply_markup=ai_services_buttons)
@@ -422,6 +500,10 @@ async def handle_message(message):
 
     elif state == "ai_chat":
         response = chat_with_ai(message.text)
+        await message.reply(response, reply_markup=Ai_back)
+
+    elif state == "gpt-chat":
+        response = get_gpt(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
     elif state == "lawyer":
@@ -489,6 +571,10 @@ async def on_callback(callback_query):
         user_states[chat_id] = "ai_chat"
         await callback_query.message.edit_text("🤖 **پیام خود را برای دستیار مومن ارسال کنید:**")
 
+    elif callback_query.data == "gpt":
+        user_states[chat_id] = "gpt-chat"
+        await callback_query.message.edit_text("🧩 **پیام خود را برای ChatGPT-4o بفرستید :**")
+
     elif callback_query.data == "translate":
         user_states[chat_id] = "get_translate"
         await callback_query.message.edit_text("**📜 لطفاً متنی مورد نظر برای ترجمه به فارسی را ارسال کنید:**")
@@ -523,6 +609,14 @@ async def on_callback(callback_query):
     elif callback_query.data == "w_i":
         user_states[chat_id] = "get_weather"
         await callback_query.message.edit_text("🌆 لطفا نام شهر خود را ارسال کنید :")
+
+    elif callback_query.data == "mobi":
+        user_states[chat_id] = "s-m"
+        await callback_query.message.edit_text("**🔎📱 لطفا نام موبایل مورد نظر خود را ارسال کنید:**")
+
+    elif callback_query.data == "p":
+        user_states[chat_id] = "photo-ai"
+        await callback_query.message.edit_text("🔮 **موضوع یا هر چیزی که می خواهید تصویر آن را بسازید را ارسال کنید :**")
 
     elif callback_query.data == "Ai_b":
         user_states[chat_id] = None
