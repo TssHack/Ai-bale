@@ -97,7 +97,7 @@ def get_fact():
 def get_weather(city):
     try:
         response = requests.get(f"https://open.wiki-api.ir/apis-1/Weather?city={city}")
-    data = response.json()
+        data = response.json()
 
     if data['status']:
         current = data['results']['current']
