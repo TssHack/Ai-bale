@@ -372,7 +372,7 @@ async def handle_message(message):
     elif state == "get_weather":
         city = message.text.strip()
         response = get_weather(city)
-        await message.reply(response, reply_markup=inline_buttons)
+        await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None  
 
     elif state == "get_translate":
