@@ -109,14 +109,12 @@ def chat_with_ai_api(query, user_id):
             "stream": False
         }
 
-        # ارسال درخواست به API و دریافت پاسخ
         response = requests.post(url, headers=headers, json=data, timeout=10)
-
-        # چاپ وضعیت پاسخ و محتوای خام پاسخ
+        
+        response.encoding = 'utf-8'  # تنظیم کدگذاری به UTF-8
         print(f"Response Status Code: {response.status_code}")
-        print(f"Response Text: {response.text}")  # محتوای خام پاسخ
+        print(f"Response Text (decoded): {response.text}")  # محتوای پاسخ بعد از دیکد شدن
 
-        # بررسی اگر پاسخ به صورت JSON است
         try:
             result = response.json().get("results", "پاسخی از هوش مصنوعی دریافت نشد.")
         except ValueError:
