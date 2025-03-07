@@ -87,6 +87,8 @@ def get_hadith():
         return "مشکلی در دریافت حدیث رخ داد.", "نامشخص"
         
 
+import requests
+
 def chat_with_ai_api(query, user_id):
     try:
         url = "https://api.binjie.fun/api/generateStream"
@@ -111,26 +113,24 @@ def chat_with_ai_api(query, user_id):
 
         response = requests.post(url, headers=headers, json=data, timeout=10)
         
-        response.encoding = 'utf-8'  # تنظیم کدگذاری به UTF-8
-        print(f"Response Status Code: {response.status_code}")
-        print(f"Response Text (decoded): {response.text}")  # محتوای پاسخ بعد از دیکد شدن
+        # اگر نیاز به دیکد کردن UTF-8 دارید، می‌توانید از این خط استفاده کنید:
+        response.encoding = 'utf-8'
+        
+        # دریافت محتوای پاسخ به صورت متن
+        response_text = response.text
 
-        # استفاده از محتوای متنی بدون نیاز به JSON
         return f"🤖 **پاسخ هوش مصنوعی** 🤖\n" \
                f"-----------------------------------\n" \
                f"💬 **ورودی شما:** {query}\n" \
-               f"📝 **پاسخ:** {response.text}\n" \
+               f"📝 **پاسخ:** {response_text}\n" \
                f"-----------------------------------\n" \
                f"✅ تمامی چت های شما با هوش مصنوعی ذخیره می شود!"
 
     except requests.exceptions.Timeout:
-        print("Timeout Error")
         return "⏳ زمان انتظار به پایان رسید. لطفاً دوباره تلاش کنید."
     except requests.exceptions.RequestException as e:
-        print(f"Request Exception: {e}")
         return f"🚫 خطا در اتصال به سرور: {str(e)}"
     except Exception as e:
-        print(f"General Error: {e}")
         return f"⚠️ مشکلی رخ داده است: {str(e)}"
 
 #music
