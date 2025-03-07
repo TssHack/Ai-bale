@@ -63,7 +63,7 @@ def get_time():
         "Esfand": "اسفند"
     }
 
-    today_event = get_today_event(jalali_date
+    today_event = get_today_event(jalali_date)
 
     return {
         "shamsi_date": jalali_date.strftime("%Y/%m/%d"),
