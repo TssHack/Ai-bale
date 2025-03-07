@@ -87,7 +87,7 @@ def get_hadith():
         return "مشکلی در دریافت حدیث رخ داد.", "نامشخص"
         
 
-def chat_with_ai_api(user_message, user_id):
+def chat_with_ai_api(query, user_id):
     try:
         url = "https://api.binjie.fun/api/generateStream"
         headers = {
@@ -101,7 +101,7 @@ def chat_with_ai_api(user_message, user_id):
             "Content-Type": "application/json"
         }
         data = {
-            "prompt": user_message,
+            "prompt": query,
             "userId": str(user_id),  # ارسال Chat ID کاربر
             "network": True,
             "system": "",
@@ -696,7 +696,7 @@ async def handle_message(message):
 
     elif state == "gpt-1":
         user_id = message.chat.id  # شناسه کاربر را از پیام دریافت می‌کنید
-        response = chat_with_ai_api(user_message, user_id)  # ارسال پیام کاربر و شناسه به تابع
+        response = chat_with_ai_api(query, user_id)  # ارسال پیام کاربر و شناسه به تابع
         await message.reply(response, reply_markup=Ai_back)
 
     elif state == "gpt-chat":
