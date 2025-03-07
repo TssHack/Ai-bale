@@ -85,6 +85,50 @@ def get_hadith():
         return data.get("hadith", "حدیثی پیدا نشد."), data.get("speaker", "نام سخنران پیدا نشد.")
     except:
         return "مشکلی در دریافت حدیث رخ داد.", "نامشخص"
+        
+
+def chat_with_ai_api(user_message, user_id):
+    try:
+        url = "https://api.binjie.fun/api/generateStream"
+        headers = {
+            "authority": "api.binjie.fun",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, deflate, br",
+            "accept-language": "en-US,en;q=0.9",
+            "origin": "https://chat18.aichatos.xyz",
+            "referer": "https://chat18.aichatos.xyz/",
+            "user-agent": "Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "prompt": user_message,
+            "userId": str(user_id),  # ارسال Chat ID کاربر
+            "network": True,
+            "system": "",
+            "withoutContext": False,
+            "stream": False
+        }
+        response = requests.post(url, headers=headers, json=data, timeout=10)
+
+        if response.status_code == 200:
+            result = response.text().get("results", "پاسخی از هوش مصنوعی دریافت نشد.")
+            
+            return f"🤖 **پاسخ هوش مصنوعی** 🤖\n" \
+                   f"-----------------------------------\n" \
+                   f"💬 **ورودی شما:** {user_message}\n" \
+                   f"📝 **پاسخ:** {result}\n" \
+                   f"-----------------------------------\n" \
+                   f"✅ تمامی چت های شما با هوش مصنوعی ذخیره می شود!"
+        
+        else:
+            return f"❌ **خطای HTTP:** {response.status_code}"
+
+    except requests.exceptions.Timeout:
+        return "⏳ زمان انتظار به پایان رسید. لطفاً دوباره تلاش کنید."
+    except requests.exceptions.RequestException:
+        return "🚫 خطا در اتصال به سرور. لطفاً بعداً تلاش کنید."
+    except Exception:
+        return "⚠️ مشکلی رخ داده است. لطفاً دوباره امتحان کنید."
 
 #music
 def music(query):
@@ -572,6 +616,7 @@ fun_science_buttons = InlineKeyboard(
 )
 
 ai_services_buttons = InlineKeyboard(
+    [("هوش مصنوعی حافظه دار 🧠", "gpt1")],
     [("دستیار مومن 🤖", "ai_chat")],
     [("وکیل ⚖️", "lawyer")],
     [("روانشناس 🧠", "psychologist")],
@@ -649,6 +694,11 @@ async def handle_message(message):
         response = chat_with_ai(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
+    elif state == "gpt-1":
+    user_id = message.chat.id  # شناسه کاربر را از پیام دریافت می‌کنید
+    response = chat_with_ai_api(user_message, user_id)  # ارسال پیام کاربر و شناسه به تابع
+    await message.reply(response, reply_markup=Ai_back)
+
     elif state == "gpt-chat":
         response = get_gpt(message.text)
         await message.reply(response, reply_markup=Ai_back)
@@ -661,7 +711,7 @@ async def handle_message(message):
         response = chat_with_psychologist(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
-    if state not in ["ai_chat", "lawyer", "psychologist", "gpt-chat"]:
+    if state not in ["ai_chat", "lawyer", "psychologist", "gpt-chat", "gpt-1"]:
         user_states[chat_id] = None  
 
 # مدیریت دکمه‌های اینلاین
@@ -722,6 +772,10 @@ async def on_callback(callback_query):
         user_states[chat_id] = "gpt-chat"
         await callback_query.message.edit_text("🧩 **پیام خود را برای ChatGPT-4o بفرستید :**")
 
+elif callback_query.data == "gpt1":
+        user_states[chat_id] = "gpt-1"
+        await callback_query.message.edit_text("🧬 **پیام خود را برای هوش مصنوعی بفرستید👀 :**")
+
     elif callback_query.data == "translate":
         user_states[chat_id] = "get_translate"
         await callback_query.message.edit_text("**📜 لطفاً متنی مورد نظر برای ترجمه به فارسی را ارسال کنید:**")
@@ -779,6 +833,6 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "Ai_b":
         user_states[chat_id] = None
-        await callback_query.message.edit_text("👀🔎", reply_markup= ai_services_buttons)
+        await callback_query.message.edit_text("👀به بخش هوش مصنوعی برگشتید", reply_markup= ai_services_buttons)
 # اجرای ربات
 bot.run()
