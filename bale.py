@@ -772,7 +772,7 @@ async def on_callback(callback_query):
         user_states[chat_id] = "gpt-chat"
         await callback_query.message.edit_text("🧩 **پیام خود را برای ChatGPT-4o بفرستید :**")
 
-elif callback_query.data == "gpt1":
+    elif callback_query.data == "gpt1":
         user_states[chat_id] = "gpt-1"
         await callback_query.message.edit_text("🧬 **پیام خود را برای هوش مصنوعی بفرستید👀 :**")
 
