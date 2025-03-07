@@ -87,34 +87,40 @@ def get_hadith():
         return "مشکلی در دریافت حدیث رخ داد.", "نامشخص"
 
 #mobile
+
 def mobile(mo):
     try:
-        # ارسال درخواست به API برای جستجوی موبایل
         url = f"https://open.wiki-api.ir/apis-1/MobileSearch?q={mo}"
         response = requests.get(url, timeout=10)
         
-        # بررسی وضعیت پاسخ HTTP
         if response.status_code == 200:
             data = response.json()
-            
             if data.get('status', False):
-                mobiles = data['results']
+                mobiles = data.get('results', [])
                 if mobiles:
-                    result = "📱 نتایج جستجو برای شما:\n\n"
+                    result = "📱 نتایج جستجوی شما:\n\n"
                     for mobile in mobiles:
-                        result += f"🔍 نام: {mobile['name']}\n"
-                        result += f"🖼️ تصویر: {mobile['image']}\n"
-                        result += f"🔗 لینک: [مشاهده مشخصات]({mobile['url']})\n\n"
+                        name = mobile.get('name', 'نامشخص')
+                        image = mobile.get('image', 'ندارد')
+                        link = mobile.get('url', '#')
+                        
+                        result += (f"🔍 نام: {name}\n"
+                                   f"🖼️ تصویر: {image}\n"
+                                   f"🔗 [مشاهده مشخصات]({link})\n\n")
                     return result
                 else:
-                    return "😔 هیچ گوشی مرتبطی پیدا نشد."
+                    return "😔 هیچ نتیجه‌ای پیدا نشد."
             else:
-                return "⚠️ خطا در ارتباط با API. لطفاً دوباره تلاش کنید."
+                return "⚠️ مشکلی در دریافت اطلاعات از API وجود دارد. لطفاً دوباره تلاش کنید."
         else:
-            return "😓 مشکلی در دریافت داده‌ها پیش آمده است. لطفاً دوباره تلاش کنید."
+            return f"😓 خطای HTTP: {response.status_code}"
     
+    except requests.exceptions.Timeout:
+        return "⏳ زمان انتظار به پایان رسید. لطفاً دوباره تلاش کنید."
+    except requests.exceptions.RequestException as e:
+        return f"❌ خطا در اتصال: {e}"
     except Exception as e:
-        return "❌ خطا در اتصال به سرویس. لطفاً دوباره تلاش کنید."
+        return "❌ مشکلی رخ داده است. لطفاً دوباره تلاش کنید."
         
 #photo
 def photo(query):
@@ -195,7 +201,7 @@ def chat_with_ai(user_message):
     try:
         response = requests.get(f"https://momen-ai.liara.run/?text={user_message}")
         data = response.json()
-        return data.get("results", "پاسخی از دستیار مومن دریافت نشد.")
+        return data.get("message", "پاسخی از دستیار مومن دریافت نشد.")
     except:
         return "مشکلی در ارتباط با سرور هوش مصنوعی رخ داد."
 #gpt
@@ -203,7 +209,7 @@ def get_gpt(user_message):
     try:
         response = requests.get(f"https://open.wiki-api.ir/apis-1/ChatGPT-4o?q={user_message}")
         data = response.json()
-        return data.get("message", "پاسخی از ChatGPT مومن دریافت نشد.")
+        return data.get("results", "پاسخی از ChatGPT دریافت نشد.")
     except:
         return "مشکلی در ارتباط با سرور ChatGPT رخ داد."
 
@@ -476,7 +482,7 @@ async def handle_message(message):
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None  
 
-    elif state == "s_m":
+    elif state == "s-m":
         mo = message.text.strip()
         response = mobile(mo)
         await message.reply(response, reply_markup=tools_buttons)
@@ -485,7 +491,7 @@ async def handle_message(message):
     elif state == "photo-ai":
         query = message.text.strip()
         response = photo(query)
-        await message.reply(response, reply_markup=Ai_back)
+        await message.reply(response, reply_markup=ai_services_buttons)
         user_states[chat_id] = None  
 
     elif state == "get_translate":
@@ -514,7 +520,7 @@ async def handle_message(message):
         response = chat_with_psychologist(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
-    if state not in ["ai_chat", "lawyer", "psychologist"]:
+    if state not in ["ai_chat", "lawyer", "psychologist", "gpt-chat"]:
         user_states[chat_id] = None  
 
 # مدیریت دکمه‌های اینلاین
@@ -604,7 +610,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "return_to_main_menu":
         user_states[chat_id] = None
-        await callback_query.message.edit_text("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
+        await callback_query.message‌.edit_text("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
 
     elif callback_query.data == "w_i":
         user_states[chat_id] = "get_weather"
