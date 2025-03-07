@@ -388,7 +388,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "calculate_age":
         user_states[chat_id] = "get_birthdate"
-        await callback_query.message.edit_text("🎂 لطفاً تاریخ تولد خود را به صورت فرمت YYYY/MM/DD (سال-ماه-روز) وارد کنید. برای مثال: 1374/2/4")
+        await callback_query.message.edit_text("🎂 لطفاً تاریخ تولد خود را به صورت فرمت YYYY/MM/DD (سال/ماه/روز) وارد کنید. برای مثال : 1374/2/4")
 
     elif callback_query.data == "hadith":
         hadith, speaker = get_hadith()
@@ -396,7 +396,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "facts":
         fact, source = get_fact()
-        await callback_query.message.edit_text(f"📌 **فکت:**\n{fact}\n✏️ **{source}**", reply_markup=fun_science_buttons)
+        await callback_query.message.edit_text(f"📌 **فکت:**\n{fact}\n**منبع**✏️ (**{source}**)", reply_markup=fun_science_buttons)
 
     elif callback_query.data == "track_parcel":
         user_states[chat_id] = "tracking"
@@ -404,11 +404,11 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "ai_chat":
         user_states[chat_id] = "ai_chat"
-        await callback_query.message.edit_text("🤖 پیام خود را برای دستیار مومن ارسال کنید:")
+        await callback_query.message.edit_text("🤖 **پیام خود را برای دستیار مومن ارسال کنید:**")
 
     elif callback_query.data == "translate":
         user_states[chat_id] = "get_translate"
-        await callback_query.message.edit_text("📜 لطفاً متنی مورد نظر برای ترجمه به فارسی را ارسال کنید:")
+        await callback_query.message.edit_text("**📜 لطفاً متنی مورد نظر برای ترجمه به فارسی را ارسال کنید:**")
         
     elif callback_query.data == "random_joke":
         await callback_query.message.edit_text(get_joke(), reply_markup=fun_science_buttons)
@@ -418,11 +418,11 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "lawyer":
         user_states[chat_id] = "lawyer"
-        await callback_query.message.edit_text("⚖️ پیام خود را برای وکیل ارسال کنید:")
+        await callback_query.message.edit_text("⚖️ **پیام خود را برای وکیل ارسال کنید:**")
 
     elif callback_query.data == "psychologist":
         user_states[chat_id] = "psychologist"
-        await callback_query.message.edit_text("🧠 پیام خود را برای روانشناس ارسال کنید:")
+        await callback_query.message.edit_text("🧠 **پیام خود را برای روانشناس ارسال کنید:**")
 
     elif callback_query.data == "help":
         await callback_query.message.edit_text("❓ **راهنمای ربات صراط** ❓\n\n🔹 برای استفاده از امکانات، یکی از گزینه‌های منو را انتخاب کنید.\n🔹 هر بخش دارای قابلیت‌های منحصربه‌فردی است که می‌توانید از آن بهره ببرید.\n\n📌 در صورت نیاز به راهنمایی بیشتر، با پشتیبانی در ارتباط باشید.\n👨‍💻 @Devehsan", reply_markup=inline_buttons)
