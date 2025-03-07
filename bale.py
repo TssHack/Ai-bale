@@ -86,8 +86,50 @@ def get_hadith():
     except:
         return "مشکلی در دریافت حدیث رخ داد.", "نامشخص"
 
-import requests
+#music
+def music(query):
+    try:
+        url = f"https://open.wiki-api.ir/apis-1/SearchAhangify?q={query}"
+        response = requests.get(url, timeout=10)
 
+        if response.status_code == 200:
+            data = response.json()
+
+            if data.get("status", False):
+                artists = data.get("results", {}).get("artists", [])
+                
+                if artists:
+                    result = "🎶✨ **نتایج جستجو آهنگ** ✨🎶\n"
+                    result += "-----------------------------------\n"
+                    for artist in artists[:5]:  # فقط 5 نتیجه اول
+                        name = artist.get("name", "نامشخص")
+                        cover = artist.get("cover", "")
+                        artist_id = artist.get("id", "")
+                        link = f"https://ahangify.com/artist/{artist_id}" if artist_id else "#"
+
+                        result += f"🔥 **نام خواننده:** {name}\n"
+                        if cover:
+                            result += f"🖼️ تصویر:\n{cover}\n"
+                        result += f"🔗 [مشاهده پروفایل]({link})\n"
+                        result += "-----------------------------------\n"
+
+                    result += "✅ برای دریافت اطلاعات بیشتر روی لینک‌ها کلیک کنید."
+                    return result
+                else:
+                    return "😔 هیچ خواننده‌ای مرتبط پیدا نشد. لطفاً دوباره امتحان کنید."
+            else:
+                return "⚠️ خطا در دریافت اطلاعات از سرور. لطفاً بعداً تلاش کنید."
+        else:
+            return f"❌ خطای HTTP: {response.status_code}"
+
+    except requests.exceptions.Timeout:
+        return "⏳ زمان انتظار به پایان رسید. لطفاً دوباره تلاش کنید."
+    except requests.exceptions.RequestException:
+        return "🚫 خطا در اتصال به سرور. لطفاً بعداً تلاش کنید."
+    except Exception:
+        return "⚠️ مشکلی رخ داده است. لطفاً دوباره امتحان کنید."
+        
+#aparst
 def aparat(query):
     try:
         url = f"https://open.wiki-api.ir/apis-1/AparatSearch?q={query}"
@@ -113,6 +155,47 @@ def aparat(query):
                     return result
                 else:
                     return "😔 هیچ ویدیویی مرتبط پیدا نشد."
+            else:
+                return "⚠️ مشکلی در دریافت اطلاعات از API وجود دارد."
+        else:
+            return f"❌ خطای HTTP: {response.status_code}"
+    
+    except requests.exceptions.Timeout:
+        return "⏳ زمان انتظار به پایان رسید. لطفاً دوباره تلاش کنید."
+    except requests.exceptions.RequestException as e:
+        return f"❌ خطا در اتصال به سرور: {e}"
+    except Exception:
+        return "🚫 مشکلی رخ داده است. لطفاً دوباره تلاش کنید."
+
+
+def digikala(query):
+    try:
+        url = f"https://open.wiki-api.ir/apis-1/SearchDigikala?q={query}"
+        response = requests.get(url, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data.get("status", False):
+                products = data.get("results", [])
+                
+                if products:
+                    result = "**🛒 نتایج جستجو در دیجی‌کالا:\n\n**"
+                    for item in products[:5]:  # نمایش 5 نتیجه اول
+                        product = item.get("product", {})
+                        title = product.get("title_fa", "بدون عنوان")
+                        price = product.get("price", 0)
+                        image = product.get("image", [""])[0]
+                        link = product.get("url", "#")
+                        seller = item.get("seller", {}).get("name", "نامشخص")
+
+                        result += (f"📌 نام محصول: {title}\n"
+                                   f"💰 قیمت: {price:,} تومان\n"
+                                   f"🛍️ فروشنده: {seller}\n"
+                                   f"🔗 [مشاهده محصول]({link})\n\n")
+                    return result
+                else:
+                    return "😔 هیچ محصولی مرتبط پیدا نشد."
             else:
                 return "⚠️ مشکلی در دریافت اطلاعات از API وجود دارد."
         else:
@@ -478,6 +561,8 @@ tools_buttons = InlineKeyboard(
     [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
     [("جستجوی گوشی 📱", "mobi")],
     [("جستجو در آپارات 🎥", "apa")],
+    (["جستجو در دیجی کالا 🗣️", "kala")",
+    [("جستجو اهنگ 🎵", "mu")],
     [("محاسبه سن 🎂", "calculate_age")],
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
@@ -531,6 +616,18 @@ async def handle_message(message):
     elif state == "s-a":
         query = message.text.strip()
         response = aparat(query)
+        await message.reply(response, reply_markup=tools_buttons)
+        user_states[chat_id] = None
+
+    elif state == "s-mu":
+        query = message.text.strip()
+        response = music(query)
+        await message.reply(response, reply_markup=tools_buttons)
+        user_states[chat_id] = None
+
+    elif state == "s-d":
+        query = message.text.strip()
+        response = digikala(query)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None
 
@@ -666,9 +763,17 @@ async def on_callback(callback_query):
         user_states[chat_id] = "s-m"
         await callback_query.message.edit_text("**🔎📱 لطفا نام موبایل مورد نظر خود را ارسال کنید:**")
 
+    elif callback_query.data == "mu":
+        user_states[chat_id] = "s-mu"
+        await callback_query.message.edit_text("**🔎🎵لطفا نام اهنگ یا خواننده مورد نظر را ارسال کنید:**")
+        
     elif callback_query.data == "apa":
         user_states[chat_id] = "s-a"
         await callback_query.message.edit_text("**🔎🎥 موضوع مورد نظر برای جستجو را ارسال کنید:**")
+
+    elif callback_query.data == "kala":
+        user_states[chat_id] = "s-d"
+        await callback_query.message.edit_text("**🔎💢نام کلای مورد نظر برای جستجو در دیجی کالا را ارسال کنید:**")
 
     elif callback_query.data == "p":
         user_states[chat_id] = "photo-ai"
