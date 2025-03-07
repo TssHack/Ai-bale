@@ -93,45 +93,47 @@ def get_fact():
         return data.get("fact", "دانستی پیدا نشد."), data.get("source", "منبع پیدا نشد.")
     except:
         return "مشکلی در دریافت دانستنی رخ داد.", "نامشخص"
-
+# city
 def get_weather(city):
     try:
         response = requests.get(f"https://open.wiki-api.ir/apis-1/Weather?city={city}")
         data = response.json()
 
-    if data['status']:
-        current = data['results']['current']
-        weather_report = (
-            f"🌀 وضعیت آب و هوا در {city} 🌀\n\n"
-            f"🌡️ دما: {current['temperature']['value']} °C\n"
-            f"🌥️ وضعیت هوا: {current['weather']['value']}\n"
-            f"💨 سرعت باد: {current['windspeed']['value']} km/h\n"
-            f"🌬️ جهت باد: {current['wind_direction']['value']}\n"
-            f"💧 رطوبت هوا: {current['humidity']['value']}%\n"
-            f"⚖️ فشار جو: {current['pressure']['value']} mb\n"
-            f"☁️ پوشش ابر: {current['cloudcover']['value']}%\n"
-            f"🌫️ دید: {current['visibility']['value']} km\n"
-            f"🥶 دمای احساس‌شده: {current['feels_like']['value']} °C\n"
-            f"🌧️ میزان بارش: {current['precipitation']['value']} mm\n"
-            f"🌞 شاخص UV: {current['uv_index']['value']}\n"
-            f"🌅 زمان طلوع آفتاب: {current['sunrise']['value']}\n"
-            f"🌇 زمان غروب آفتاب: {current['sunset']['value']}\n"
-            f"🌙 زمان طلوع ماه: {current['moonrise']['value']}\n"
-            f"🌘 زمان غروب ماه: {current['moonset']['value']}\n"
-            f"📅 آخرین بروزرسانی: {current['last_updated']['value']}\n\n"
-            f"🕰️ پیش‌بینی ساعتی:\n"
-            f"🔹 00:00 | دما: {data['results']['hourly_forecast'][0]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][0]['weather']}\n"
-            f"🔹 03:00 | دما: {data['results']['hourly_forecast'][1]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][1]['weather']}\n"
-            f"🔹 06:00 | دما: {data['results']['hourly_forecast'][2]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][2]['weather']}\n"
-            f"🔹 09:00 | دما: {data['results']['hourly_forecast'][3]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][3]['weather']}\n"
-            f"🔹 12:00 | دما: {data['results']['hourly_forecast'][4]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][4]['weather']}\n"
-            f"🔹 15:00 | دما: {data['results']['hourly_forecast'][5]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][5]['weather']}\n"
-            f"🔹 18:00 | دما: {data['results']['hourly_forecast'][6]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][6]['weather']}\n"
-            f"🔹 21:00 | دما: {data['results']['hourly_forecast'][7]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][7]['weather']}\n"
-        )
-        return weather_report
-    else:
-        return "متاسفانه نتواستم اطلاعات آب و هوا را پیدا کنم. لطفاً نام شهر را بررسی کنید."
+        if data['status']:  # بررسی وضعیت پاسخ API
+            current = data['results']['current']
+            weather_report = (
+                f"🌀 وضعیت آب و هوا در {city} 🌀\n\n"
+                f"🌡️ دما: {current['temperature']['value']} °C\n"
+                f"🌥️ وضعیت هوا: {current['weather']['value']}\n"
+                f"💨 سرعت باد: {current['windspeed']['value']} km/h\n"
+                f"🌬️ جهت باد: {current['wind_direction']['value']}\n"
+                f"💧 رطوبت هوا: {current['humidity']['value']}%\n"
+                f"⚖️ فشار جو: {current['pressure']['value']} mb\n"
+                f"☁️ پوشش ابر: {current['cloudcover']['value']}%\n"
+                f"🌫️ دید: {current['visibility']['value']} km\n"
+                f"🥶 دمای احساس‌شده: {current['feels_like']['value']} °C\n"
+                f"🌧️ میزان بارش: {current['precipitation']['value']} mm\n"
+                f"🌞 شاخص UV: {current['uv_index']['value']}\n"
+                f"🌅 زمان طلوع آفتاب: {current['sunrise']['value']}\n"
+                f"🌇 زمان غروب آفتاب: {current['sunset']['value']}\n"
+                f"🌙 زمان طلوع ماه: {current['moonrise']['value']}\n"
+                f"🌘 زمان غروب ماه: {current['moonset']['value']}\n"
+                f"📅 آخرین بروزرسانی: {current['last_updated']['value']}\n\n"
+                f"🕰️ پیش‌بینی ساعتی:\n"
+                f"🔹 00:00 | دما: {data['results']['hourly_forecast'][0]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][0]['weather']}\n"
+                f"🔹 03:00 | دما: {data['results']['hourly_forecast'][1]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][1]['weather']}\n"
+                f"🔹 06:00 | دما: {data['results']['hourly_forecast'][2]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][2]['weather']}\n"
+                f"🔹 09:00 | دما: {data['results']['hourly_forecast'][3]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][3]['weather']}\n"
+                f"🔹 12:00 | دما: {data['results']['hourly_forecast'][4]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][4]['weather']}\n"
+                f"🔹 15:00 | دما: {data['results']['hourly_forecast'][5]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][5]['weather']}\n"
+                f"🔹 18:00 | دما: {data['results']['hourly_forecast'][6]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][6]['weather']}\n"
+                f"🔹 21:00 | دما: {data['results']['hourly_forecast'][7]['temperature']} °C | وضعیت: {data['results']['hourly_forecast'][7]['weather']}\n"
+            )
+            return weather_report
+        else:
+            return "متاسفانه نتواستم اطلاعات آب و هوا را پیدا کنم. لطفاً نام شهر را بررسی کنید."
+    except Exception as e:
+        return f"خطا در دریافت اطلاعات: {str(e)}"
 
 # تابع چت با هوش مصنوعی اسلامی
 def chat_with_ai(user_message):
