@@ -112,23 +112,23 @@ def chat_with_ai_api(query, user_id):
         # ارسال درخواست به API و دریافت پاسخ
         response = requests.post(url, headers=headers, json=data, timeout=10)
 
-        # پرینت وضعیت پاسخ در ترمینال
+        # چاپ وضعیت پاسخ و محتوای خام پاسخ
         print(f"Response Status Code: {response.status_code}")
-        print(f"Response Text: {response.text}")
+        print(f"Response Text: {response.text}")  # محتوای خام پاسخ
 
-        if response.status_code == 200:
+        # بررسی اگر پاسخ به صورت JSON است
+        try:
             result = response.json().get("results", "پاسخی از هوش مصنوعی دریافت نشد.")
-            print(f"AI Response: {result}")  # پرینت پاسخ هوش مصنوعی
-            return f"🤖 **پاسخ هوش مصنوعی** 🤖\n" \
-                   f"-----------------------------------\n" \
-                   f"💬 **ورودی شما:** {query}\n" \
-                   f"📝 **پاسخ:** {result}\n" \
-                   f"-----------------------------------\n" \
-                   f"✅ تمامی چت های شما با هوش مصنوعی ذخیره می شود!"
-        
-        else:
-            return f"❌ **خطای HTTP:** {response.status_code}\n" \
-                   f"جزئیات پاسخ: {response.text}"
+        except ValueError:
+            print("Invalid JSON response.")
+            return "⚠️ مشکلی در دریافت پاسخ از سرور وجود دارد."
+
+        return f"🤖 **پاسخ هوش مصنوعی** 🤖\n" \
+               f"-----------------------------------\n" \
+               f"💬 **ورودی شما:** {query}\n" \
+               f"📝 **پاسخ:** {result}\n" \
+               f"-----------------------------------\n" \
+               f"✅ تمامی چت های شما با هوش مصنوعی ذخیره می شود!"
 
     except requests.exceptions.Timeout:
         print("Timeout Error")
