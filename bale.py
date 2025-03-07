@@ -102,33 +102,43 @@ def chat_with_ai_api(query, user_id):
         }
         data = {
             "prompt": query,
-            "userId": str(user_id),  # ارسال Chat ID کاربر
+            "userId": str(user_id),
             "network": True,
             "system": "",
             "withoutContext": False,
             "stream": False
         }
+
+        # ارسال درخواست به API و دریافت پاسخ
         response = requests.post(url, headers=headers, json=data, timeout=10)
 
+        # پرینت وضعیت پاسخ در ترمینال
+        print(f"Response Status Code: {response.status_code}")
+        print(f"Response Text: {response.text}")
+
         if response.status_code == 200:
-            result = response.text().get("results", "پاسخی از هوش مصنوعی دریافت نشد.")
-            
+            result = response.json().get("results", "پاسخی از هوش مصنوعی دریافت نشد.")
+            print(f"AI Response: {result}")  # پرینت پاسخ هوش مصنوعی
             return f"🤖 **پاسخ هوش مصنوعی** 🤖\n" \
                    f"-----------------------------------\n" \
-                   f"💬 **ورودی شما:** {user_message}\n" \
+                   f"💬 **ورودی شما:** {query}\n" \
                    f"📝 **پاسخ:** {result}\n" \
                    f"-----------------------------------\n" \
                    f"✅ تمامی چت های شما با هوش مصنوعی ذخیره می شود!"
         
         else:
-            return f"❌ **خطای HTTP:** {response.status_code}"
+            return f"❌ **خطای HTTP:** {response.status_code}\n" \
+                   f"جزئیات پاسخ: {response.text}"
 
     except requests.exceptions.Timeout:
+        print("Timeout Error")
         return "⏳ زمان انتظار به پایان رسید. لطفاً دوباره تلاش کنید."
-    except requests.exceptions.RequestException:
-        return "🚫 خطا در اتصال به سرور. لطفاً بعداً تلاش کنید."
-    except Exception:
-        return "⚠️ مشکلی رخ داده است. لطفاً دوباره امتحان کنید."
+    except requests.exceptions.RequestException as e:
+        print(f"Request Exception: {e}")
+        return f"🚫 خطا در اتصال به سرور: {str(e)}"
+    except Exception as e:
+        print(f"General Error: {e}")
+        return f"⚠️ مشکلی رخ داده است: {str(e)}"
 
 #music
 def music(query):
