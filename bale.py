@@ -170,6 +170,40 @@ def get_translate(text):
         return data.get("results", "ترجمه‌ای پیدا نشد.")
     except:
         return "مشکلی در ترجمه رخ داد."
+        
+#فوتبال
+def get_f():
+    try:
+        response = requests.get("https://open.wiki-api.ir/apis-1/Footballi")
+        data = response.json()
+
+        if 'status' in data and data['status']:
+            if 'results' in data:
+                matches = data['results']
+                match_report = "⚽ بازی‌های امروز:\n\n"
+                
+                for match in matches:
+                    competition = match.get('competition', 'نامشخص')
+                    home_team = match.get('home_team', 'نامشخص')
+                    away_team = match.get('away_team', 'نامشخص')
+                    time = match.get('time', 'زمان مشخص نیست') if match.get('time', 'N/A') != "N/A" else "زمان مشخص نیست"
+                    url = match.get('url', '#')
+                    
+                    match_report += (
+                        f"🏆 {competition}\n"
+                        f"🏠 {home_team} vs {away_team}\n"
+                        f"⏰ زمان: {time}\n"
+                        f"🔗 [مشاهده بازی]({url})\n\n"
+                    )
+
+                return match_report
+            else:
+                return "اطلاعات بازی‌ها در دسترس نیست."
+        else:
+            return "متاسفانه نتواستم اطلاعات بازی‌های امروز را دریافت کنم."
+
+    except Exception as e:
+        return f"خطا در دریافت اطلاعات بازی‌ها: {str(e)}"
 
 # تابع پیگیری مرسوله تیپاکسimport requests
 
@@ -331,7 +365,8 @@ inline_buttons = InlineKeyboard(
 tools_buttons = InlineKeyboard(
     [("اعلام زمان ⏰", "time")],
     [("دریافت نرخ طلا و سکه 💰", "gold_rate")],
-    [("‎🌦️ وضعیت آب و هوا", "w_i")],
+    [("وضعیت آب و هوا‌ ⛅️", "w_i")],
+    [("بازی های امروز ⚽️", "fo")],
     [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
     [("محاسبه سن 🎂", "calculate_age")],
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
@@ -460,6 +495,9 @@ async def on_callback(callback_query):
         
     elif callback_query.data == "random_joke":
         await callback_query.message.edit_text(get_joke(), reply_markup=fun_science_buttons)
+
+    elif callback_query.data == "fo":
+        await callback_query.message.edit_text(get_f(), reply_markup=tools_buttons)
 
     elif callback_query.data == "gold_rate":
         await callback_query.message.edit_text(get_gold_rate(), reply_markup=tools_buttons)
