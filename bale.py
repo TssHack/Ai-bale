@@ -695,9 +695,9 @@ async def handle_message(message):
         await message.reply(response, reply_markup=Ai_back)
 
     elif state == "gpt-1":
-    user_id = message.chat.id  # شناسه کاربر را از پیام دریافت می‌کنید
-    response = chat_with_ai_api(user_message, user_id)  # ارسال پیام کاربر و شناسه به تابع
-    await message.reply(response, reply_markup=Ai_back)
+        user_id = message.chat.id  # شناسه کاربر را از پیام دریافت می‌کنید
+        response = chat_with_ai_api(user_message, user_id)  # ارسال پیام کاربر و شناسه به تابع
+        await message.reply(response, reply_markup=Ai_back)
 
     elif state == "gpt-chat":
         response = get_gpt(message.text)
