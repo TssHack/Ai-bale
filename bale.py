@@ -38,15 +38,40 @@ def get_time():
     eid_date = jdatetime.date(jalali_date.year + 1, 1, 1)
     remaining_days = (eid_date - jalali_date).days
 
-    today_event = get_today_event(jalali_date)
+    days = {
+        "Saturday": "شنبه",
+        "Sunday": "یکشنبه",
+        "Monday": "دوشنبه",
+        "Tuesday": "سه‌شنبه",
+        "Wednesday": "چهارشنبه",
+        "Thursday": "پنج‌شنبه",
+        "Friday": "جمعه"
+    }
+
+    months = {
+        "Farvardin": "فروردین",
+        "Ordibehesht": "اردیبهشت",
+        "Khordad": "خرداد",
+        "Tir": "تیر",
+        "Mordad": "مرداد",
+        "Shahrivar": "شهریور",
+        "Mehr": "مهر",
+        "Aban": "آبان",
+        "Azar": "آذر",
+        "Dey": "دی",
+        "Bahman": "بهمن",
+        "Esfand": "اسفند"
+    }
+
+    today_event = get_today_event(jalali_date
 
     return {
         "shamsi_date": jalali_date.strftime("%Y/%m/%d"),
         "gregorian_date": now.strftime("%Y-%m-%d"),
         "hijri_date": hijri_date_str,
         "time": now.strftime("%H:%M:%S"),
-        "day": jalali_date.strftime("%A"),
-        "month": jalali_date.strftime("%B"),
+        "day": days[jalali_date.strftime("%A")],
+        "month": months[jalali_date.strftime("%B")],
         "year": jalali_date.year,
         "remaining_days": remaining_days,
         "event": today_event
@@ -259,7 +284,7 @@ inline_buttons = InlineKeyboard(
     [("📌 بخش کاربردی و ابزاری", "tools")],
     [("🎯 بخش سرگرمی و علمی", "fun_science")],
     [("🤖 بخش هوش مصنوعی", "ai_services")],
-    [("ℹ️ درباره ما", "info")]
+    [("ℹ️ درباره ما", "info"), ("راهنما 🧬", "help")]
 )
 
 tools_buttons = InlineKeyboard(
@@ -407,7 +432,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "return_to_main_menu":
         user_states[chat_id] = None
-        await callback_query.message.edit_text("🏠 بازگشت به منوی اصلی:", reply_markup=inline_buttons)
+        await callback_query.message.edit_text("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
 
     elif callback_query.data == "Ai_b":
         user_states[chat_id] = None
