@@ -635,10 +635,15 @@ return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 # مدیریت پیام‌ها
-@bot.on_message(~is_joined(CHANNEL_ID))
-async def not_joined(message):
-    # اگر کاربر عضو کانال نباشد
-    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید. \n\n🔗 عضویت در کانال: https://t.me/your_channel")
+keyboard = InlineKeyboard(
+        [
+            InlineButton("🔗 عضویت در کانال", url="https://t.me/your_channel")
+        ]
+    )
+    await message.reply(
+        "🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.",
+        reply_markup=keyboard
+    )
 
 @bot.on_message()
 async def answer_message(message):
