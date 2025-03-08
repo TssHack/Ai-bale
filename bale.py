@@ -616,9 +616,8 @@ tools_buttons = InlineKeyboard(
 )
 
 fun_science_buttons = InlineKeyboard(
-    [InlineKeyboardButton("جوک تصادفی 😂", callback_data="random_joke")],[InlineKeyboardButton("دانستنی 🧠", callback_data="fact")],
-    [InlineKeyboardButton("بازی", web_app={"url":  "link..."})],
-    [InlineKeyboardButton("بازگشت به منو اصلی 🏠", callback_data="return_to_main_menu")]
+    [("جوک تصادفی 😂", "random_joke"), ("دانستنی 🧠", "fact")],
+    [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
                   
 ai_services_buttons = InlineKeyboard(
@@ -639,11 +638,6 @@ Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 async def not_joined(message):
     # اگر کاربر عضو کانال نباشد
     await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.\nسپس دستور /start را وارد کنید.", reply_markup=join)
-
-#@bot.on_message()
-#async def answer_message(message):
-    # اگر کاربر عضو کانال باشد
-    #await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
 
 
 @bot.on_message()
@@ -771,7 +765,7 @@ async def on_callback(callback_query):
         hadith, speaker = get_hadith()
         await callback_query.message.edit_text(f"📖 **حدیث:**\n{hadith}\n🗣️ **{speaker}**", reply_markup=tools_buttons)
 
-    elif callback_query.data == "facts":
+    elif callback_query.data == "fact":
         fact, source = get_fact()
         await callback_query.message.edit_text(f"📌 **فکت:**\n{fact}\n**موضوع**✏️ (**{source}**)", reply_markup=fun_science_buttons)
 
