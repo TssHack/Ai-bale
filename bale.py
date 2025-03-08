@@ -422,7 +422,7 @@ def get_fot():
 
         match_report = "⚽ بازی‌های امروز:\n\n"
         
-        for match in matches:
+        for match in matches[:20]:  # محدود کردن به ۲۰ بازی اول
             competition = match.get('competition', 'نامشخص') or 'نامشخص'
             home_team = match.get('home_team', 'نامشخص') or 'نامشخص'
             away_team = match.get('away_team', 'نامشخص') or 'نامشخص'
@@ -442,6 +442,7 @@ def get_fot():
         return f"خطا در اتصال به سرور: {req_err}"
     except Exception as e:
         return f"خطا در پردازش اطلاعات بازی‌ها: {e}"
+
 
 # تابع پیگیری مرسوله تیپاکسimport requests
 
