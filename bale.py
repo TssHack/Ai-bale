@@ -638,7 +638,7 @@ Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 @bot.on_message(~is_joined(CHANNEL_ID))
 async def not_joined(message):
     # اگر کاربر عضو کانال نباشد
-    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.", reply_markup=join)
+    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.\nسپس دستور /start را وارد کنید.", reply_markup=join)
 
 @bot.on_message()
 async def answer_message(message):
@@ -651,7 +651,7 @@ async def handle_message(message):
     chat_id = message.chat.id
     state = user_states.get(chat_id)
     if state is None:
-        await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
+    await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
     elif state == "tracking":
         tracking_code = message.text.strip()
         response = track_parcel(tracking_code)
