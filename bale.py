@@ -85,9 +85,49 @@ def get_hadith():
         return data.get("hadith", "حدیثی پیدا نشد."), data.get("speaker", "نام سخنران پیدا نشد.")
     except:
         return "مشکلی در دریافت حدیث رخ داد.", "نامشخص"
-        
 
-import requests
+user_agents = [
+    {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
+    {"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"},
+]
+
+def check_user_membership(user_id):
+    """بررسی عضویت کاربر در کانال بله"""
+    try:
+        user_agent = random.choice(user_agents)
+        headers = {"user-agent": user_agent["user-agent"]}
+        data = {"chat_id": CHANNEL_ID, "user_id": str(user_id)}
+
+        response = requests.post(f"https://tapi.bale.ai/bot{TOKEN}/getChatMember", data=data, headers=headers)
+        result = response.json()
+
+        if "result" in result and result["result"]["status"] in ["member", "administrator", "creator"]:
+            return True  # کاربر عضو است
+        return False  # کاربر عضو نیست
+
+    except Exception as e:
+        print(f"خطا در بررسی عضویت: {e}")
+        return False
+
+@bot.on.message()
+async def handle_message(message):
+    user_id = message.from_user.user_id
+
+    if not check_user_membership(user_id):
+        # دکمه شیشه‌ای برای عضویت در کانال
+        keyboard = InlineKeyboard(
+            [
+                InlineButton("🔗 عضویت در کانال", url="https://t.me/your_channel")
+            ]
+        )
+
+        await bot.send_message(
+            message.chat.id,
+            "🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.",
+            reply_markup=keyboard
+        )
+        return
+        
 
 def chat_with_ai_api(query, user_id):
     try:
