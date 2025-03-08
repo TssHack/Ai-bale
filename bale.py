@@ -650,8 +650,8 @@ async def answer_message(message):
 async def handle_message(message):
     chat_id = message.chat.id
     state = user_states.get(chat_id)
-    if state is None:
-    await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
+    #if state is None:
+    #await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
     elif state == "tracking":
         tracking_code = message.text.strip()
         response = track_parcel(tracking_code)
