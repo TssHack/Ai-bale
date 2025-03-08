@@ -634,6 +634,9 @@ ai_services_buttons = InlineKeyboard(
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
+@bot.on_message(~is_joined(CHANNEL_ID))
+async def not_joined(message):
+
 # مدیریت پیام‌ها
 keyboard = InlineKeyboard(
         [
