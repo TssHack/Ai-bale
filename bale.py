@@ -632,13 +632,15 @@ ai_services_buttons = InlineKeyboard(
 )
 
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
-#join = InlineKeyboard(["🔗 عضویت در کانال", url="https://t.me/your_channel"])
+join = InlineKeyboard(
+    [InlineKeyboardButton("🔗 عضویت در کانال", url="https://ble.ir/shafag_tm")],
+)
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 @bot.on_message(~is_joined(CHANNEL_ID))
 async def not_joined(message):
     # اگر کاربر عضو کانال نباشد
-    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید. \n\n🔗 عضویت در کانال: https://ble.ir/shafag_tm")
+    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.", reply_markup=join)
 
 @bot.on_message()
 async def answer_message(message):
