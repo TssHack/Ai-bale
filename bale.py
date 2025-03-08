@@ -146,9 +146,9 @@ def music(query):
                 artists = data.get("results", {}).get("artists", [])
                 
                 if artists:
-                    result = "🎶✨ **نتایج جستجو آهنگ** ✨🎶\n"
+                    result = "🎶✨ **نتایج جستجوی نام خواننده** ✨🎶\n"
                     result += "-----------------------------------\n"
-                    for artist in artists[:5]:  # فقط 5 نتیجه اول
+                    for artist in artists[:10]:  # فقط 5 نتیجه اول
                         name = artist.get("name", "نامشخص")
                         cover = artist.get("cover", "")
                         artist_id = artist.get("id", "")
@@ -236,7 +236,7 @@ def digikala(query):
                         seller = item.get("seller", {}).get("name", "نامشخص")
 
                         result += (f"📌 نام محصول: {title}\n"
-                                   f"💰 قیمت: {price:,} تومان\n"
+                                   f"💰 قیمت: {price:,} ریال\n"
                                    f"🛍️ فروشنده: {seller}\n"
                                    f"🔗 [مشاهده محصول]({link})\n\n")
                     return result
@@ -269,7 +269,6 @@ def mobile(mo):
                     result = "📱 نتایج جستجوی شما:\n\n"
                     for mobile in mobiles:
                         name = mobile.get('name', 'نامشخص')
-                        image = mobile.get('image', 'ندارد')
                         link = mobile.get('url', '#')
                         
                         result += (f"🔍 نام: {name}\n"
@@ -408,7 +407,7 @@ def get_translate(text):
         return "مشکلی در ترجمه رخ داد."
         
 #فوتبال
-def get_f():
+def get_fot():
     try:
         response = requests.get("https://open.wiki-api.ir/apis-1/Footballi")
         data = response.json()
@@ -592,37 +591,35 @@ def calculate_age(birthdate_text):
     
 # دکمه‌های اینلاین
 inline_buttons = InlineKeyboard(
+    [("🤖 بخش هوش مصنوعی", "ai_services")],
     [("📌 بخش کاربردی و ابزاری", "tools")],
     [("🎯 بخش سرگرمی و علمی", "fun_science")],
-    [("🤖 بخش هوش مصنوعی", "ai_services")],
     [("ℹ️ درباره ما", "info"), ("راهنما 🧬", "help")]
 )
 
 tools_buttons = InlineKeyboard(
-    [("اعلام زمان ⏰", "time")],
+    [("اعلام زمان ⏰", "time"), ("محاسبه سن 🎂", "calculate_age")],
     [("دریافت نرخ طلا و سکه 💰", "gold_rate")],
     [("وضعیت آب و هوا ⛅️", "w_i")],
-    [("بازی های امروز ⚽️", "fo")],
+    [("بازی های امروز ⚽️", "fot")],
     [("پیگیری مرسوله تیپاکس 📦", "track_parcel")],
     [("جستجوی گوشی 📱", "mobi")],
     [("جستجو در آپارات 🎥", "apa")],
     [("جستجو در دیجی کالا 🗣️", "kala")],
-    [("جستجو آهنگ 🎵", "mu")],
-    [("محاسبه سن 🎂", "calculate_age")],
+    [("جستجو خواننده 🎵", "mu")],
+    
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
 
 fun_science_buttons = InlineKeyboard(
-    [("جوک تصادفی 😂", "random_joke")],
-    [("دانستنی‌ها 🧠", "facts")],
+    [("جوک تصادفی 😂", "random_joke"), ("دانستنی 🧠")],
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
 
 ai_services_buttons = InlineKeyboard(
     [("هوش مصنوعی حافظه دار 🧠", "gpt1")],
     [("دستیار مومن 🤖", "ai_chat")],
-    [("وکیل ⚖️", "lawyer")],
-    [("روانشناس 🧠", "psychologist")],
+    [("وکیل ⚖️", "lawyer"), ("روانشناس 🧠", "psychologist")],
     [("ChatGPT-4o 🧩", "gpt")],
     [("تولید تصویر 🤳", "p")],
     [("مترجم انگلیسی 📝", "translate")],
@@ -762,7 +759,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "facts":
         fact, source = get_fact()
-        await callback_query.message.edit_text(f"📌 **فکت:**\n{fact}\n**منبع**✏️ (**{source}**)", reply_markup=fun_science_buttons)
+        await callback_query.message.edit_text(f"📌 **فکت:**\n{fact}\n**موضوع**✏️ (**{source}**)", reply_markup=fun_science_buttons)
 
     elif callback_query.data == "track_parcel":
         user_states[chat_id] = "tracking"
@@ -787,8 +784,8 @@ async def on_callback(callback_query):
     elif callback_query.data == "random_joke":
         await callback_query.message.edit_text(get_joke(), reply_markup=fun_science_buttons)
 
-    elif callback_query.data == "fo":
-        await callback_query.message.edit_text(get_f(), reply_markup=tools_buttons)
+    elif callback_query.data == "fot":
+        await callback_query.message.edit_text(get_fot(), reply_markup=tools_buttons)
 
     elif callback_query.data == "gold_rate":
         await callback_query.message.edit_text(get_gold_rate(), reply_markup=tools_buttons)
@@ -821,7 +818,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "mu":
         user_states[chat_id] = "s-mu"
-        await callback_query.message.edit_text("**🔎🎵لطفا نام اهنگ یا خواننده مورد نظر را ارسال کنید:**")
+        await callback_query.message.edit_text("**🔎🎵لطفا نام خواننده مورد نظر را ارسال کنید:**")
         
     elif callback_query.data == "apa":
         user_states[chat_id] = "s-a"
@@ -833,7 +830,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "p":
         user_states[chat_id] = "photo-ai"
-        await callback_query.message.edit_text("🔮 **موضوع یا هر چیزی که می خواهید تصویر آن را بسازید را ارسال کنید :**")
+        await callback_query.message.edit_text("🔮 **موضوع یا هر چیزی که می خواهید تصویر آن را بسازید را به صورت انگلیسی ارسال کنید :**")
 
     elif callback_query.data == "Ai_b":
         user_states[chat_id] = None
