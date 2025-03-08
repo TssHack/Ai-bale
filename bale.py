@@ -632,32 +632,22 @@ ai_services_buttons = InlineKeyboard(
 )
 
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
-join = InlineKeyboard(
-        [
-            InlineButton("🔗 عضویت در کانال", url="https://t.me/your_channel")
-        ]
-    )
+join = InlineKeyboard([InlineButton("🔗 عضویت در کانال", url="https://t.me/your_channel")])
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
-
-@bot.on_message(~is_joined(CHANNEL_ID))
-async def not_joined(message):
-    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.", reply_markup=join)
-
-
-@bot.on_message()
-async def answer_message(message):
-    # اگر کاربر عضو کانال باشد
-    await message.reply("✅ شما عضو کانال هستید! از ربات استفاده کنید.")
-
 
 @bot.on_message()
 async def handle_message(message):
     chat_id = message.chat.id
     state = user_states.get(chat_id)
 
-    if state is None:
-        await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
+    if not is_joined(CHANNEL_ID)(message):  # بررسی عضویت در کانال
+        await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.", reply_markup=join)
+        return  # از اینجا دیگر هیچ‌کدام از دستورات بعدی اجرا نمی‌شوند
 
+    if state is None:
+        await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=return_to_main_menu_button)
+    else:
+        await message.reply("✅ شما عضو کانال هستید! از ربات استفاده کنید.", reply_markup=return_to_main_menu_button)
     elif state == "tracking":
         tracking_code = message.text.strip()
         response = track_parcel(tracking_code)
