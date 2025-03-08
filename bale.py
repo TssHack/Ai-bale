@@ -11,7 +11,7 @@ import pytz
 
 # تنظیمات ربات
 bot_token = "‏‏1752263879:AR7EWOyRTpIcTXyQG7kq3ZbHFBaAyFV43rEC8krO"
-CHANNEL_ID = "@sartaaa"
+CHANNEL_ID = "@shafag_tm"
 bot = Client(bot_token)
 
 # دیکشنری ذخیره وضعیت کاربران
@@ -632,13 +632,13 @@ ai_services_buttons = InlineKeyboard(
 )
 
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
-join = InlineKeyboard(["🔗 عضویت در کانال", url="https://t.me/your_channel"])
+#join = InlineKeyboard(["🔗 عضویت در کانال", url="https://t.me/your_channel"])
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 @bot.on_message(~is_joined(CHANNEL_ID))
 async def not_joined(message):
-    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.", reply_markup=join)
-
+    # اگر کاربر عضو کانال نباشد
+    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید. \n\n🔗 عضویت در کانال: https://t.me/shafag_tm")
 
 @bot.on_message()
 async def answer_message(message):
