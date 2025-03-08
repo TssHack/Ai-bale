@@ -612,15 +612,15 @@ tools_buttons = InlineKeyboard(
     [("جستجو در آپارات 🎥", "apa")],
     [("جستجو در دیجی کالا 🗣️", "kala")],
     [("جستجو خواننده 🎵", "mu")],
-    
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
 
 fun_science_buttons = InlineKeyboard(
-    [("جوک تصادفی 😂", "random_joke"), ("دانستنی 🧠")],
-    [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
+    [InlineKeyboardButton("جوک تصادفی 😂", callback_data="random_joke")],[InlineKeyboardButton("دانستنی 🧠", callback_data="fact")],
+    [InlineKeyboardButton("بازی", web_app={"url":  "link..."})],
+    [InlineKeyboardButton("بازگشت به منو اصلی 🏠", callback_data="return_to_main_menu")]
 )
-
+                  
 ai_services_buttons = InlineKeyboard(
     [("هوش مصنوعی حافظه دار 🧠", "gpt1")],
     [("دستیار مومن 🤖", "ai_chat")],
@@ -646,10 +646,10 @@ async def answer_message(message):
     await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
 
 
-@bot.on_message()
-async def handle_message(message):
-    chat_id = message.chat.id
-    state = user_states.get(chat_id)
+#@bot.on_message()
+#async def handle_message(message):
+    #chat_id = message.chat.id
+    #tate = user_states.get(chat_id)
     #if state is None:
     #await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
     elif state == "tracking":
