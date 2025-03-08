@@ -632,21 +632,13 @@ ai_services_buttons = InlineKeyboard(
 )
 
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
+join = InlineKeyboard([("🔗 عضویت در کانال", url="https://t.me/your_channel")])
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 @bot.on_message(~is_joined(CHANNEL_ID))
 async def not_joined(message):
+    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.", reply_markup=join)
 
-# مدیریت پیام‌ها
-keyboard = InlineKeyboard(
-        [
-            InlineButton("🔗 عضویت در کانال", url="https://t.me/your_channel")
-        ]
-    )
-    await message.reply(
-        "🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.",
-        reply_markup=keyboard
-    )
 
 @bot.on_message()
 async def answer_message(message):
