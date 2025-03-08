@@ -632,9 +632,7 @@ ai_services_buttons = InlineKeyboard(
 )
 
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
-join = InlineKeyboard(
-    [InlineKeyboardButton("🔗 عضویت در کانال", url="https://ble.ir/shafag_tm")],
-)
+join = InlineKeyboard([InlineKeyboardButton("🔗 عضویت در کانال", url="https://ble.ir/shafag_tm")])
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 @bot.on_message(~is_joined(CHANNEL_ID))
