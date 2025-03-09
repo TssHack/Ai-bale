@@ -18,7 +18,8 @@ inline_buttons = InlineKeyboard(
 )
 
 tools_buttons = InlineKeyboard(
-    [("اعلام زمان ⏰", "time"), ("فونت ساز", "font")],
+    [("اعلام زمان ⏰", "time")],
+    [("فونت ساز", "font")],
     [("محاسبه سن 🎂", "calculate_age")],
     [("دریافت نرخ طلا و سکه 💰", "gold_rate")],
     [("وضعیت آب و هوا ⛅️", "w_i")],
@@ -32,8 +33,11 @@ tools_buttons = InlineKeyboard(
 )
 
 fun_science_buttons = InlineKeyboard(
-    [("جوک تصادفی 😂", "random_joke"), ("دانستنی 🧠", "fact")],
-    [("سخن بزرگان", "so"), ("ذکر هفته", "zekr")],
+    [("حدیث 📖", "hadith")],
+    [("جوک تصادفی 😂", "random_joke")],
+    [("دانستنی 🧠", "fact")],
+    [("سخن بزرگان", "so")],
+    [("ذکر هفته", "zekr")],
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
                   
@@ -226,10 +230,10 @@ async def on_callback(callback_query):
         await callback_query.message.edit_text(get_gold_rate(), reply_markup=tools_buttons)
 
     elif callback_query.data == "so":
-        await callback_query.message.edit_text(get_wise_quote(), reply_markup=tools_buttons) 
+        await callback_query.message.edit_text(get_wise_quote(), reply_markup=fun_science_buttons) 
 
     elif callback_query.data == "zekr":
-        await callback_query.message.edit_text(get_zekr(), reply_markup=tools_buttons)   
+        await callback_query.message.edit_text(get_zekr(), reply_markup=fun_science_buttons)   
 
     elif callback_query.data == "lawyer":
         user_states[chat_id] = "lawyer"
