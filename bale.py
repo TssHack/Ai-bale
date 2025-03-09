@@ -194,7 +194,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "hadith":
         hadith, speaker = get_hadith()
-        await callback_query.message.edit_text(f"📖 **حدیث:**\n{hadith}\n🗣️ **{speaker}**", reply_markup=tools_buttons)
+        await callback_query.message.edit_text(f"📖 **حدیث:**\n{hadith}\n🗣️ **{speaker}**", reply_markup=fun_science_buttons)
 
     elif callback_query.data == "fact":
         fact, source = get_fact()
