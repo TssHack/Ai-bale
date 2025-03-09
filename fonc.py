@@ -165,16 +165,17 @@ def convert_to_fonts(text):
         response.raise_for_status()  # بررسی وضعیت پاسخ سرور
         
         if response.status_code == 200:
-            fonts = response.text  # دریافت فونت‌ها
-            return fonts
+            fonts = response.text.split("\n")  # دریافت فونت‌ها و جدا کردن هر فونت در یک خط
+            return "\n".join([f"`{font}`" for font in fonts])  # نمایش فونت‌ها به صورت قابل کپی کردن
+            
         else:
-            return "❌ <b>خطا:</b> نتواستم فونت‌ها را دریافت کنم."
+            return "❌ خطا: نتواستم فونت‌ها را دریافت کنم."
     
     except requests.exceptions.Timeout:
-        return "⏳ <b>سرور پاسخگو نیست، لطفاً بعداً امتحان کنید.</b>"
+        return "⏳ سرور پاسخگو نیست، لطفاً بعداً امتحان کنید."
     
     except requests.exceptions.RequestException as e:
-        return f"⚠️ <b>خطای اتصال:</b> {e}"
+        return f"⚠️ خطای اتصال: {e}"
     #BRADAY
 def calculate_age(birthdate_text):
     try:
@@ -301,7 +302,7 @@ def get_weather(city):
     except Exception as e:
         return f"خطا در دریافت اطلاعات: {str(e)}"
     #FOTBAL
-def get_f():
+def get_fot():
     try:
         response = requests.get("https://open.wiki-api.ir/apis-1/Footballi", timeout=10)
         response.raise_for_status()  # بررسی وضعیت پاسخ (۴xx یا ۵xx)
