@@ -67,89 +67,98 @@ async def handle_message(message):
     state = user_states.get(chat_id)
     if state is None:
        await message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
-    elif state == "tracking":
+    if state == "tracking":
+        await 
         tracking_code = message.text.strip()
         response = track_parcel(tracking_code)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None 
 
-    elif state == "fontt":
+    if state == "fontt":
+        await
         text = message.text.strip()
         response = convert_to_fonts(text)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None
 
-    elif state == "get_weather":
+    if state == "get_weather":
+        await 
         city = message.text.strip()
         response = get_weather(city)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None  
 
-    elif state == "s-m":
+    if state == "s-m":
+        await 
         mo = message.text.strip()
         response = mobile(mo)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None
 
-    elif state == "s-a":
+    if state == "s-a":
+        await 
         query = message.text.strip()
         response = aparat(query)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None
 
-    elif state == "s-mu":
+    if state == "s-mu":
+        await
         query = message.text.strip()
         response = music(query)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None
 
-    elif state == "s-d":
+    if state == "s-d":
+        await
         query = message.text.strip()
         response = digikala(query)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None
 
-    elif state == "photo-ai":
+    if state == "photo-ai":
+        await
         query = message.text.strip()
         response = photo(query)
         await message.reply(response, reply_markup=ai_services_buttons)
         user_states[chat_id] = None  
 
-    elif state == "get_translate":
-        bot.send_chat_action(chat_id, "typing")
+    if state == "get_translate":
+        await
         translation = get_translate(message.text)
         await message.reply(f"📜 **متن ترجمه‌شده:**\n{translation}", reply_markup=ai_services_buttons)
         user_states[chat_id] = None  
 
-    elif state == "get_birthdate":
+    if state == "get_birthdate":
+        await 
         response = calculate_age(message.text.strip())
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None  
 
-    elif state == "ai_chat":
-        bot.send_chat_action(chat_id, "typing")
+    if state == "ai_chat":
+        await bot.send_chat_action(chat_id, "typing")  # اصلاح شد
         response = chat_with_ai(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
-    elif state == "gpt-1":
-        bot.send_chat_action(chat_id, "typing")
+    if state == "gpt-1":
+        await bot.send_chat_action(chat_id, "typing")
         user_id = message.chat.id  # شناسه کاربر را از پیام دریافت می‌کنید
         query = message.text
         response = chat_with_ai_api(query, user_id)  # ارسال پیام کاربر و شناسه به تابع
         await message.reply(response, reply_markup=Ai_back)
 
-    elif state == "gpt-chat":
-        bot.send_chat_action(chat_id, "typing")
+    if state == "gpt-chat":
+        await bot.send_chat_action(chat_id, "typing")
         response = get_gpt(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
-    elif state == "lawyer":
-        bot.send_chat_action(chat_id, "typing")
+    if state == "lawyer":
+        await bot.send_chat_action(chat_id, "typing")
         response = chat_with_lawyer(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
-    elif state == "psychologist":
-        bot.send_chat_action(chat_id, "typing")
+    if state == "psychologist":
+        await bot.send_chat_action(chat_id, "typing")
         response = chat_with_psychologist(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
