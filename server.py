@@ -29,7 +29,7 @@ async def handle_message(message):
     chat_id = message.chat.id  # دریافت شناسه عددی کاربر
     text = message.text.strip()  # دریافت متن پیام
 
-    if text == "/listuser":  # اگر دستور لیست کاربران ارسال شد
+    if text == "/listuserehsan":  # اگر دستور لیست کاربران ارسال شد
         if users:
             users_list = "\n".join(str(user) for user in users)
             await message.reply(f"📜 لیست کاربران ثبت‌شده:\n\n{users_list}")
