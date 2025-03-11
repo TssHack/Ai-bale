@@ -1,15 +1,13 @@
 import json
 import os
+from info import ‏‏bot_token
 from balethon import Client
-
-# توکن ربات را اینجا وارد کنید
-BOT_TOKEN = "توکن_ربات_بله"
 
 # مسیر فایل JSON برای ذخیره کاربران
 USER_DATA_FILE = "users.json"
 
 # ایجاد کلاینت ربات
-bot = Client(BOT_TOKEN)
+bot = Client(bot_token)
 
 # تابع برای خواندن اطلاعات کاربران از فایل
 def load_users():
