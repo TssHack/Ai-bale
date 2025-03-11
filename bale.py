@@ -116,6 +116,7 @@ async def handle_message(message):
         user_states[chat_id] = None  
 
     elif state == "get_translate":
+        bot.send_chat_action(chat_id, "typing")
         translation = get_translate(message.text)
         await message.reply(f"📜 **متن ترجمه‌شده:**\n{translation}", reply_markup=ai_services_buttons)
         user_states[chat_id] = None  
@@ -126,24 +127,29 @@ async def handle_message(message):
         user_states[chat_id] = None  
 
     elif state == "ai_chat":
+        bot.send_chat_action(chat_id, "typing")
         response = chat_with_ai(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
     elif state == "gpt-1":
+        bot.send_chat_action(chat_id, "typing")
         user_id = message.chat.id  # شناسه کاربر را از پیام دریافت می‌کنید
         query = message.text
         response = chat_with_ai_api(query, user_id)  # ارسال پیام کاربر و شناسه به تابع
         await message.reply(response, reply_markup=Ai_back)
 
     elif state == "gpt-chat":
+        bot.send_chat_action(chat_id, "typing")
         response = get_gpt(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
     elif state == "lawyer":
+        bot.send_chat_action(chat_id, "typing")
         response = chat_with_lawyer(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
     elif state == "psychologist":
+        bot.send_chat_action(chat_id, "typing")
         response = chat_with_psychologist(message.text)
         await message.reply(response, reply_markup=Ai_back)
 
