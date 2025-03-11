@@ -1,7 +1,7 @@
 from balethon.objects import InlineKeyboard, ReplyKeyboard
 from fonc import chat_with_ai_api, chat_with_ai, chat_with_lawyer, chat_with_psychologist, get_gpt, get_translate, load_events, get_today_event, get_time, convert_to_fonts, calculate_age, get_gold_rate, get_weather, get_fot, track_parcel, mobile, aparat, digikala, music, get_hadith, get_joke, get_fact, get_wise_quote, get_zekr
 from balethon import Client
-from info.py import bot_token
+from info import bot_token
 
 # تنظیمات ربات
 bot = Client(bot_token)
