@@ -46,7 +46,6 @@ ai_services_buttons = InlineKeyboard(
     [("دستیار مومن 🤖", "ai_chat")],
     [("وکیل ⚖️", "lawyer"), ("روانشناس 🧠", "psychologist")],
     [("ChatGPT-4o 🧩", "gpt")],
-    [("تولید تصویر 🤳", "p")],
     [("مترجم انگلیسی 📝", "translate")],
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
@@ -115,13 +114,6 @@ async def handle_message(message):
         response = digikala(query)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None
-
-    elif state == "photo-ai":
-        await bot.send_chat_action(chat_id, "typing")
-        query = message.text.strip()
-        response = photo(query)
-        await message.reply(response, reply_markup=ai_services_buttons)
-        user_states[chat_id] = None  
 
     elif state == "get_translate":
         await bot.send_chat_action(chat_id, "typing")
@@ -287,10 +279,6 @@ async def on_callback(callback_query):
     elif callback_query.data == "kala":
         user_states[chat_id] = "s-d"
         await callback_query.message.edit_text("**🔎💢نام کلای مورد نظر برای جستجو در دیجی کالا را ارسال کنید:**")
-
-    elif callback_query.data == "p":
-        user_states[chat_id] = "photo-ai"
-        await callback_query.message.edit_text("🔮 **موضوع یا هر چیزی که می خواهید تصویر آن را بسازید را به صورت انگلیسی ارسال کنید :**")
 
     elif callback_query.data == "Ai_b":
         user_states[chat_id] = None
