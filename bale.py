@@ -103,7 +103,7 @@ async def handle_message(message):
         user_states[chat_id] = None
 
     elif state == "s-mu":
-        await
+        await bot.send_chat_action(chat_id, "typing")
         query = message.text.strip()
         response = music(query)
         await message.reply(response, reply_markup=tools_buttons)
