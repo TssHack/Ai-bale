@@ -1,14 +1,20 @@
 from balethon.objects import InlineKeyboard, ReplyKeyboard
 from fonc import get_prayer_times, chat_with_ai_api, chat_with_ai, chat_with_lawyer, chat_with_psychologist, get_gpt, get_translate, load_events, get_today_event, get_time, convert_to_fonts, calculate_age, get_gold_rate, get_weather, get_fot, track_parcel, mobile, aparat, digikala, music, get_hadith, get_joke, get_fact, get_wise_quote, get_zekr
 from balethon import Client
-from balethon.conditions import is_joined
-from info import bot_token, CHANNEL_ID
+#from balethon.conditions import is_joined
+from info import bot_token, CHANNEL_USERNAME
 
 # تنظیمات ربات
 bot = Client(bot_token)
 
 # دیکشنری ذخیره وضعیت کاربران
 user_states = {}
+
+def get_subscription_buttons():
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton(text="📢 عضویت در کانال", url=f"https://ble.ir/{CHANNEL_USERNAME[1:]}")],
+        [InlineKeyboardButton(text="✅ بررسی عضویت", callback_data="check_subscription")]
+    ])
     
 # دکمه‌های اینلاین
 inline_buttons = InlineKeyboard(
@@ -56,10 +62,19 @@ return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی
 join = InlineKeyboard([InlineKeyboardButton("🔗 عضویت در کانال", url="https://ble.ir/shafag_tm")])
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
-@bot.on_message(~is_joined(CHANNEL_ID))
-async def not_joined(message):
+@bot.on_message()
+async def handle_message(message: Message):
+    chat_id = message.chat.update_id
+    user_id = message.from_user.user_id
+
+    if is_user_subscribed(user_id):
+        await bot.send_message(chat_id, "❌ شما هنوز عضو کانال نیستید. لطفاً ابتدا عضو شوید و سپس روی *'بررسی عضویت'* کلیک کنید.", 
+                                  reply_markup=get_subscription_buttons())
+
+#@bot.on_message(~is_joined(CHANNEL_ID))
+#async def not_joined(message):
     # اگر کاربر عضو کانال نباشد
-    await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.\nسپس دستور /start را وارد کنید.", reply_markup=join)
+    #await message.reply("🚫 برای استفاده از ربات، ابتدا در کانال ما عضو شوید.\nسپس دستور /start را وارد کنید.", reply_markup=join)
 
 
 @bot.on_message()
@@ -296,5 +311,18 @@ async def on_callback(callback_query):
     elif callback_query.data == "Ai_b":
         user_states[chat_id] = None
         await callback_query.message.edit_text("👀به بخش هوش مصنوعی برگشتید", reply_markup= ai_services_buttons)
+
+@client.on_callback_query()
+async def handle_callback(query):
+    user_id = query.from_user.user_id
+    chat_id = query.message.chat.update_id
+
+    if query.data == "check_subscription":
+        if is_user_subscribed(user_id):
+            await bot.message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
+        else:
+            await bot.send_message(chat_id, "❌ هنوز عضو نشده‌اید. لطفاً ابتدا در کانال عضو شوید و دوباره امتحان کنید.", 
+                                      reply_markup=get_subscription_buttons())
+
 # اجرای ربات
 bot.run()
