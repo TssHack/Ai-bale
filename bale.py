@@ -56,7 +56,7 @@ return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی
 #join = InlineKeyboard([
         #[InlineKeyboardButton(text="📢 عضویت در کانال", url=f"https://ble.ir/{CHANNEL_USERNAME[1:]}")],
         #[InlineKeyboardButton(text="✅ بررسی عضویت", callback_data="check_subscription")]
-    ])
+    #])
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 #@bot.on_message(~is_joined(CHANNEL_ID))
