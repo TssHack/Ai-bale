@@ -9,12 +9,6 @@ bot = Client(bot_token)
 
 # دیکشنری ذخیره وضعیت کاربران
 user_states = {}
-
-def get_subscription_buttons():
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton(text="📢 عضویت در کانال", url=f"https://ble.ir/{CHANNEL_USERNAME[1:]}")],
-        [InlineKeyboardButton(text="✅ بررسی عضویت", callback_data="check_subscription")]
-    ])
     
 # دکمه‌های اینلاین
 inline_buttons = InlineKeyboard(
@@ -59,7 +53,10 @@ ai_services_buttons = InlineKeyboard(
 )
 
 return_to_main_menu_button = InlineKeyboard([("بازگشت به منو اصلی 🏠", "return_to_main_menu")])
-join = InlineKeyboard([InlineKeyboardButton("🔗 عضویت در کانال", url="https://ble.ir/shafag_tm")])
+join = InlineKeyboard([
+        [InlineKeyboardButton(text="📢 عضویت در کانال", url=f"https://ble.ir/{CHANNEL_USERNAME[1:]}")],
+        [InlineKeyboardButton(text="✅ بررسی عضویت", callback_data="check_subscription")]
+    ])
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 @bot.on_message()
@@ -69,7 +66,7 @@ async def handle_message(message: Message):
 
     if is_user_subscribed(user_id):
         await bot.send_message(chat_id, "❌ شما هنوز عضو کانال نیستید. لطفاً ابتدا عضو شوید و سپس روی *'بررسی عضویت'* کلیک کنید.", 
-                                  reply_markup=get_subscription_buttons())
+                                  reply_markup=join)
 
 #@bot.on_message(~is_joined(CHANNEL_ID))
 #async def not_joined(message):
@@ -322,7 +319,7 @@ async def handle_callback(query):
             await bot.message.reply("🤖 به ربات صراط خوش آمدید!\n\n✨ دستیار هوشمند اسلامی شما ✨\n\n📌 این ربات امکانات متنوعی را در اختیار شما قرار می‌دهد:", reply_markup=inline_buttons)
         else:
             await bot.send_message(chat_id, "❌ هنوز عضو نشده‌اید. لطفاً ابتدا در کانال عضو شوید و دوباره امتحان کنید.", 
-                                      reply_markup=get_subscription_buttons())
+                                      reply_markup=join)
 
 # اجرای ربات
 bot.run()
