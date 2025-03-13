@@ -274,7 +274,7 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "shar":
         user_states[chat_id] = "shary"
-        await callback_query.message.edit_text("🌆 لطفا نام شهر خود را ارسال کنید :")
+        await callback_query.message.edit_text("🌆 لطفا نام شهر خود را به انگلیسی ارسال کنید مانند : tabriz :")
 
     elif callback_query.data == "mobi":
         user_states[chat_id] = "s-m"
