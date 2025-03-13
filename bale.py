@@ -60,7 +60,7 @@ join = InlineKeyboard([
 Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 @bot.on_message()
-async def handle_message(message: Message):
+async def handle_message(message):
     chat_id = message.chat.update_id
     user_id = message.from_user.user_id
 
