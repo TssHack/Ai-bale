@@ -61,7 +61,7 @@ Ai_back = InlineKeyboard([("🔙", "Ai_b")])
 
 @bot.on_message()
 async def handle_message(message):
-    chat_id = message.chat.update_id
+    chat_id = message.chat.id
     user_id = message.from_user.user_id
 
     if is_user_subscribed(user_id):
@@ -311,8 +311,8 @@ async def on_callback(callback_query):
 
 @bot.on_callback_query()
 async def handle_callback(query):
-    user_id = query.from_user.user_id
-    chat_id = query.message.chat.update_id
+    user_id = query.from_user.id
+    chat_id = query.message.chat.id
 
     if query.data == "check_subscription":
         if is_user_subscribed(user_id):
