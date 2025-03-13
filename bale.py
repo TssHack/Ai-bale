@@ -19,7 +19,8 @@ inline_buttons = InlineKeyboard(
 
 tools_buttons = InlineKeyboard(
     [("اعلام زمان ⏰", "time")],
-    [("فونت ساز", "font")],
+    [("اوقات شرعی 🌆", "shar"],
+    [("فونت ساز 🦄", "font")],
     [("محاسبه سن 🎂", "calculate_age")],
     [("دریافت نرخ طلا و سکه 💰", "gold_rate")],
     [("وضعیت آب و هوا ⛅️", "w_i")],
@@ -36,8 +37,8 @@ fun_science_buttons = InlineKeyboard(
     [("حدیث 📖", "hadith")],
     [("جوک تصادفی 😂", "random_joke")],
     [("دانستنی 🧠", "fact")],
-    [("سخن بزرگان", "so")],
-    [("ذکر هفته", "zekr")],
+    [("سخن بزرگان 🗣️", "so")],
+    [("ذکر هفته 📿", "zekr")],
     [("بازگشت به منو اصلی 🏠", "return_to_main_menu")]
 )
                   
@@ -70,6 +71,13 @@ async def handle_message(message):
         await bot.send_chat_action(chat_id, "typing") 
         tracking_code = message.text.strip()
         response = track_parcel(tracking_code)
+        await message.reply(response, reply_markup=tools_buttons)
+        user_states[chat_id] = None 
+
+    elif state == "shary":
+        await bot.send_chat_action(chat_id, "typing") 
+        city = message.text.strip()
+        response = get_prayer_times(city)
         await message.reply(response, reply_markup=tools_buttons)
         user_states[chat_id] = None 
 
@@ -262,6 +270,10 @@ async def on_callback(callback_query):
 
     elif callback_query.data == "w_i":
         user_states[chat_id] = "get_weather"
+        await callback_query.message.edit_text("🌆 لطفا نام شهر خود را ارسال کنید :")
+
+    elif callback_query.data == "shar":
+        user_states[chat_id] = "shary"
         await callback_query.message.edit_text("🌆 لطفا نام شهر خود را ارسال کنید :")
 
     elif callback_query.data == "mobi":
