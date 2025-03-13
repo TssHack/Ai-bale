@@ -6,6 +6,15 @@ from datetime import datetime
 import jdatetime
 import pytz
 
+def is_user_subscribed(user_id):
+    url = f"https://tapi.bale.ai/bot{TOKEN}/getChatMember?chat_id={CHANNEL_USERNAME}&user_id={user_id}"
+    response = requests.get(url).json()
+
+    # بررسی وضعیت عضویت
+    if "result" in response and response["result"].get("status") in ["member", "administrator", "creator"]:
+        return True
+    return False
+
 #AI-MEMORI
 def chat_with_ai_api(query, user_id):
     try:
