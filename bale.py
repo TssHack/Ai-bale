@@ -309,7 +309,7 @@ async def on_callback(callback_query):
         user_states[chat_id] = None
         await callback_query.message.edit_text("👀به بخش هوش مصنوعی برگشتید", reply_markup= ai_services_buttons)
 
-@client.on_callback_query()
+@bot.on_callback_query()
 async def handle_callback(query):
     user_id = query.from_user.user_id
     chat_id = query.message.chat.update_id
