@@ -154,6 +154,56 @@ def get_time():
         "remaining_days": remaining_days,
         "event": today_event
     }
+    #Shary
+def get_prayer_times(city, country="Iran"):
+    try:
+        url = f"https://api.aladhan.com/v1/timingsByCity?city={city}&country={country}&method=2"
+        response = requests.get(url)
+        data = response.json()
+
+        if response.status_code == 200 and "data" in data:
+            timings = data["data"]["timings"]
+            hijri = data["data"]["date"]["hijri"]
+            gregorian = data["data"]["date"]["gregorian"]
+            meta = data["data"]["meta"]
+
+            # تبدیل نام ماه قمری به فارسی
+            english_to_persian = {
+                "Muharram": "محرم",
+                "Safar": "صفر",
+                "Rabi al-Awwal": "ربیع‌الاول",
+                "Rabi al-Thani": "ربیع‌الثانی",
+                "Jumada al-Awwal": "جمادی‌الاول",
+                "Jumada al-Thani": "جمادی‌الثانی",
+                "Rajab": "رجب",
+                "Sha'ban": "شعبان",
+                "Ramadan": "رمضان",
+                "Shawwal": "شوال",
+                "Dhul-Qadah": "ذی‌القعده",
+                "Dhul-Hijjah": "ذی‌الحجه",
+            }
+            hijri_month_fa = english_to_persian.get(hijri["month"]["en"], hijri["month"]["en"])
+
+            prayer_report = (
+                f"🕌 **اوقات شرعی {city}, {country}** 🕌\n\n"
+                f"📅 **تاریخ:** {gregorian['date']} ({hijri['date']} هجری قمری)\n"
+                f"🌙 **ماه قمری:** {hijri_month_fa}\n"
+                f"📍 **موقعیت:** {meta['latitude']}, {meta['longitude']} ({meta['timezone']})\n\n"
+                f"🌅 **اذان صبح:** {timings['Fajr']}\n"
+                f"☀️ **طلوع آفتاب:** {timings['Sunrise']}\n"
+                f"🕌 **اذان ظهر:** {timings['Dhuhr']}\n"
+                f"🕒 **اذان عصر:** {timings['Asr']}\n"
+                f"🌇 **غروب آفتاب:** {timings['Sunset']}\n"
+                f"🕌 **اذان مغرب:** {timings['Maghrib']}\n"
+                f"🌙 **اذان عشا:** {timings['Isha']}\n"
+                f"🕛 **نیمه‌شب شرعی:** {timings['Midnight']}\n"
+                f"🕌 **وقت سحر (امساک):** {timings['Imsak']}\n"
+            )
+            return prayer_report
+        else:
+            return "❌ متاسفانه نتوانستم اطلاعات اوقات شرعی را دریافت کنم. لطفاً نام شهر را بررسی کنید."
+    except Exception as e:
+        return f"⚠️ خطا در دریافت اطلاعات: {str(e)}"
     #font
 def convert_to_fonts(text):
     """تبدیل متن به فونت‌های مختلف با استفاده از API"""
